@@ -1,0 +1,121 @@
+//
+// Created by KangDroid on 2021/02/09.
+//
+
+#include "MainExecuter.h"
+
+void MainExecutor::parse_main() {
+    variables_map vm;
+    options_description desc("Supported Options/Args");
+    desc.add_options()
+            ("help,h", "Display Help Message")
+            ("create-container", "Create Container from server")
+            ("master-address,I", value<string>(), "Master Server Address[With port]");
+    store(parse_command_line(argc, argv, desc), vm);
+
+    if (vm.size() == 0 || vm.count("help")) {
+        cout << desc << endl;
+        return;
+    }
+
+    if (vm.count("master-address")) {
+        this->master_url = vm["master-address"].as<string>();
+    }
+
+    if (vm.count("create-container")) {
+        // Show Region!
+        show_regions();
+
+        // Get Data from STDIN
+        get_data_stdin();
+
+        // Request Container[Server Call]
+        if (!request_container()) {
+            cerr << "Error Occured!" << endl;
+        }
+    }
+}
+
+MainExecutor::MainExecutor(int argc, char **argv) {
+    this->master_url = "http://localhost:8080";
+    this->argc = argc;
+    this->argv = argv;
+
+    this->parse_main();
+}
+
+bool MainExecutor::request_container() {
+    string url = master_url + "/api/client/register";
+
+    // The Client
+    http_client client_req(url);
+
+    // The body
+    http_request request_type(methods::POST);
+
+    json::value main_post = json::value::object();
+    main_post["id"] = json::value::number(10);
+    main_post["userName"] = json::value::string(dto.userName);
+    main_post["userPassword"] = json::value::string(dto.userPassword);
+    main_post["dockerId"] = json::value::string("");
+    main_post["computeRegion"] = json::value::string(dto.computeRegion);
+
+    request_type.set_body(main_post);
+    http_response response;
+
+    try {
+        client_req.request(request_type).then([&response](http_response hr) {
+            response = hr;
+        }).wait();
+    } catch (const exception& expn) {
+        cerr << "Error: ";
+        cerr << expn.what() << endl;
+        return false;
+    }
+
+    return (response.status_code() == http::status_codes::OK);
+}
+
+void MainExecutor::get_data_stdin() {
+    // User Name
+    cout << "Input UserName: ";
+    getline(cin, dto.userName);
+    // User Password
+    cout << "Input Password: ";
+    getline(cin, dto.userPassword);
+    // ComputeRegion
+    cout << "Enter Compute Region: ";
+    getline(cin, dto.computeRegion);
+}
+
+bool MainExecutor::show_regions() {
+    string url = master_url + "/api/client/node/load";
+
+    // The Client
+    http_client client_req(url);
+
+    // The body
+    http_request request_type(methods::GET);
+    http_response response;
+
+    try {
+        client_req.request(request_type).then([&response](http_response hr) {
+            response = hr;
+        }).wait();
+    } catch (const exception& expn) {
+        cerr << "Error: ";
+        cerr << expn.what() << endl;
+        return false;
+    }
+
+    json::value main_object = response.extract_json().get();
+
+    // Object Array
+    for (int i = 0; i < main_object.size(); i++) {
+        cout << "Region Name: " << main_object[i]["regionName"].as_string() << endl;
+        cout << "Region Load[%]: " << main_object[i]["nodeLoadPercentage"].as_string() << endl;
+        cout << endl;
+    }
+
+    return (response.status_code() == http::status_codes::OK);
+}
