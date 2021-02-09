@@ -31,7 +31,7 @@ void MainExecutor::parse_main() {
 
         // Request Container[Server Call]
         if (!request_container()) {
-            cerr << "Error Occured!" << endl;
+            cerr << "Error Occurred, Exiting!" << endl;
         }
     }
 }
@@ -61,11 +61,11 @@ bool MainExecutor::request_container() {
     main_post["computeRegion"] = json::value::string(dto.computeRegion);
 
     request_type.set_body(main_post);
-    http_response response;
+    json::value response_data;
 
     try {
-        client_req.request(request_type).then([&response](http_response hr) {
-            response = hr;
+        client_req.request(request_type).then([&response_data](http_response hr) {
+            response_data = hr.extract_json().get();
         }).wait();
     } catch (const exception& expn) {
         cerr << "Error: ";
@@ -73,7 +73,20 @@ bool MainExecutor::request_container() {
         return false;
     }
 
-    return (response.status_code() == http::status_codes::OK);
+    cout << endl << endl;
+    string err_message = response_data["errorMessage"].as_string();
+
+    if (!err_message.empty()) {
+        cerr << "Error Occurred: " << err_message << endl;
+        return false;
+    }
+
+    cout << "Container Region: " << response_data["regionLocation"].as_string() << "." << endl;
+    cout << "Container ID: " << response_data["containerId"].as_string() << "." << endl;
+    cout << "Container Successfully Created!" << endl;
+    cout << "Now you can ssh into: \"ssh root@" << response_data["targetIpAddress"].as_string() << " -p " << response_data["targetPort"].as_string() << "\"";
+
+    return true;
 }
 
 void MainExecutor::get_data_stdin() {
