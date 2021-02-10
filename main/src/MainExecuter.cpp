@@ -11,7 +11,11 @@ void MainExecutor::parse_main() {
             ("help,h", "Display Help Message")
             ("create-container", "Create Container from server")
             ("master-address,I", value<string>(), "Master Server Address[With port]");
-    store(parse_command_line(argc, argv, desc), vm);
+    try {
+        store(parse_command_line(argc, argv, desc), vm);
+    } catch (const exception& expn) {
+        cerr << expn.what() << endl;
+    }
 
     if (vm.empty() || vm.count("help")) {
         cout << desc << endl;
