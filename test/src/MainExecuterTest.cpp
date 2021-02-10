@@ -4,16 +4,19 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include "MainExecuter.h"
+#include "Return.h"
 
 class MainExecutorTest : public testing::Test, protected MainExecutor {
 };
 
 TEST_F(MainExecutorTest, isRequestingWorks) {
     master_url = "http://localhost:8080";
-    EXPECT_EQ(request_container(), true);
+    auto response = request_container();
+    EXPECT_EQ(response.get_message().empty(), true);
 }
 
 TEST_F(MainExecutorTest, isRegionShowWorks) {
     master_url = "http://localhost:8080";
-    EXPECT_EQ(show_regions(), true);
+    auto response = show_regions();
+    EXPECT_EQ(response.get_message().empty(), true);
 }

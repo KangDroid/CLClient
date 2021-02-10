@@ -11,6 +11,8 @@
 
 #include <iostream>
 
+#include "Return.h"
+
 using namespace std;
 using namespace boost::program_options;
 using namespace web;
@@ -40,9 +42,9 @@ protected:
 
     void parse_main();
 
-    bool show_regions();
+    Return<bool> show_regions();
 
-    bool request_container();
+    Return<bool> request_container();
 
     http_response get_response(http_client &client, http_request &request_type);
 

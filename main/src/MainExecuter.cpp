@@ -24,8 +24,9 @@ void MainExecutor::parse_main() {
 
     if (vm.count("create-container")) {
         // Show Region!
-        if (!show_regions()) {
-            cerr << "Exiting.." << endl;
+        auto region_response = show_regions();
+        if (!region_response.get_message().empty()) {
+            cerr << "Error: " << region_response.get_message() << endl;
             return;
         }
 
@@ -33,8 +34,9 @@ void MainExecutor::parse_main() {
         get_data_stdin();
 
         // Request Container[Server Call]
-        if (!request_container()) {
-            cerr << "Error Occurred, Exiting!" << endl;
+        auto request_response = request_container();
+        if (!request_response.get_message().empty()) {
+            cerr << "Error: " << request_response.get_message() << endl;
         }
     }
 }
@@ -47,7 +49,7 @@ MainExecutor::MainExecutor(int argc, char **argv) {
     this->parse_main();
 }
 
-bool MainExecutor::request_container() {
+Return<bool> MainExecutor::request_container() {
     string url = master_url + "/api/client/register";
 
     // The Client
@@ -73,8 +75,7 @@ bool MainExecutor::request_container() {
     string err_message = response_data["errorMessage"].as_string();
 
     if (!err_message.empty()) {
-        cerr << "Error Occurred: " << err_message << endl;
-        return false;
+        return Return<bool>(err_message);
     }
 
     cout << "Container Region: " << response_data["regionLocation"].as_string() << "." << endl;
@@ -83,7 +84,7 @@ bool MainExecutor::request_container() {
     cout << "Now you can ssh into: \"ssh root@" << response_data["targetIpAddress"].as_string() << " -p "
          << response_data["targetPort"].as_string() << "\"";
 
-    return true;
+    return Return<bool>(true);
 }
 
 void MainExecutor::get_data_stdin() {
@@ -98,7 +99,7 @@ void MainExecutor::get_data_stdin() {
     getline(cin, dto.computeRegion);
 }
 
-bool MainExecutor::show_regions() {
+Return<bool> MainExecutor::show_regions() {
     string url = master_url + "/api/client/node/load";
 
     // The Client
@@ -111,8 +112,7 @@ bool MainExecutor::show_regions() {
     json::value main_object = response.extract_json().get();
 
     if (main_object.size() == 0) {
-        cerr << "No registered compute node found on master server!" << endl;
-        return false;
+        return Return<bool>("No registered compute node found on master server!");
     }
 
     // Object Array
@@ -122,7 +122,7 @@ bool MainExecutor::show_regions() {
         cout << endl;
     }
 
-    return (response.status_code() == http::status_codes::OK);
+    return Return<bool>((response.status_code() == http::status_codes::OK));
 }
 
 http_response MainExecutor::get_response(http_client &client, http_request &request_type) {
