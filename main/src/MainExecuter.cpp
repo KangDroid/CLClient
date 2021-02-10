@@ -14,7 +14,7 @@ void MainExecutor::parse_main() {
     try {
         store(parse_command_line(argc, argv, desc), vm);
     } catch (const exception& expn) {
-        cerr << expn.what() << endl;
+        print_error(string(expn.what()));
     }
 
     if (vm.empty() || vm.count("help")) {
@@ -30,7 +30,7 @@ void MainExecutor::parse_main() {
         // Show Region!
         auto region_response = show_regions();
         if (!region_response.get_message().empty()) {
-            cerr << "Error: " << region_response.get_message() << endl;
+            print_error(region_response.get_message());
             return;
         }
 
@@ -40,7 +40,7 @@ void MainExecutor::parse_main() {
         // Request Container[Server Call]
         auto request_response = request_container();
         if (!request_response.get_message().empty()) {
-            cerr << "Error: " << request_response.get_message() << endl;
+            print_error(request_response.get_message());
         }
     }
 }
@@ -134,8 +134,15 @@ http_response MainExecutor::get_response(http_client &client, http_request &requ
     try {
         ret_response = client.request(request_type).get();
     } catch (const exception &expn) {
-        cerr << "Error: ";
-        cerr << expn.what() << endl;
+        print_error(expn.what());
     }
     return ret_response;
+}
+
+void MainExecutor::print_error(string &message) {
+    cerr << RED << "Error: " << message << RESET << endl;
+}
+
+void MainExecutor::print_error(const string &message) {
+    cerr << RED << "Error: " << message << RESET << endl;
 }

@@ -19,6 +19,9 @@ using namespace web;
 using namespace web::http;
 using namespace web::http::client;
 
+#define RESET   "\033[0m"
+#define RED     "\033[31m"
+
 class DataTransferObject {
 public:
     long id;
@@ -41,6 +44,9 @@ protected:
     void get_data_stdin();
 
     void parse_main();
+
+    void print_error(string &message);
+    void print_error(const string &message);
 
     Return<bool> show_regions();
 
