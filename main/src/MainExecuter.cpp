@@ -13,7 +13,7 @@ void MainExecutor::parse_main() {
             ("master-address,I", value<string>(), "Master Server Address[With port]");
     store(parse_command_line(argc, argv, desc), vm);
 
-    if (vm.size() == 0 || vm.count("help")) {
+    if (vm.empty() || vm.count("help")) {
         cout << desc << endl;
         return;
     }
@@ -70,7 +70,7 @@ bool MainExecutor::request_container() {
         client_req.request(request_type).then([&response_data](http_response hr) {
             response_data = hr.extract_json().get();
         }).wait();
-    } catch (const exception& expn) {
+    } catch (const exception &expn) {
         cerr << "Error: ";
         cerr << expn.what() << endl;
         return false;
@@ -87,7 +87,8 @@ bool MainExecutor::request_container() {
     cout << "Container Region: " << response_data["regionLocation"].as_string() << "." << endl;
     cout << "Container ID: " << response_data["containerId"].as_string() << "." << endl;
     cout << "Container Successfully Created!" << endl;
-    cout << "Now you can ssh into: \"ssh root@" << response_data["targetIpAddress"].as_string() << " -p " << response_data["targetPort"].as_string() << "\"";
+    cout << "Now you can ssh into: \"ssh root@" << response_data["targetIpAddress"].as_string() << " -p "
+         << response_data["targetPort"].as_string() << "\"";
 
     return true;
 }
@@ -118,7 +119,7 @@ bool MainExecutor::show_regions() {
         client_req.request(request_type).then([&response](http_response hr) {
             response = hr;
         }).wait();
-    } catch (const exception& expn) {
+    } catch (const exception &expn) {
         cerr << "Error: ";
         cerr << expn.what() << endl;
         return false;

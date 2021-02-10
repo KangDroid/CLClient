@@ -5,7 +5,7 @@
 #include <iostream>
 #include "MainExecuter.h"
 
-class MainExecutorTest: public testing::Test, protected MainExecutor {
+class MainExecutorTest : public testing::Test, protected MainExecutor {
 };
 
 TEST_F(MainExecutorTest, isRequestingWorks) {

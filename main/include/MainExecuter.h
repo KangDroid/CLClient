@@ -29,7 +29,7 @@ public:
 class MainExecutor {
 protected:
     int argc;
-    char** argv;
+    char **argv;
     DataTransferObject dto;
 
 protected:
@@ -37,12 +37,16 @@ protected:
 
 protected:
     void get_data_stdin();
+
     void parse_main();
+
     bool show_regions();
+
     bool request_container();
 
 public:
-    MainExecutor(int argc, char** argv);
+    MainExecutor(int argc, char **argv);
+
     MainExecutor() {}
 };
 
