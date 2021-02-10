@@ -24,7 +24,10 @@ void MainExecutor::parse_main() {
 
     if (vm.count("create-container")) {
         // Show Region!
-        show_regions();
+        if (!show_regions()) {
+            cerr << "Exiting.." << endl;
+            return;
+        }
 
         // Get Data from STDIN
         get_data_stdin();
@@ -122,6 +125,11 @@ bool MainExecutor::show_regions() {
     }
 
     json::value main_object = response.extract_json().get();
+
+    if (main_object.size() == 0) {
+        cerr << "No registered compute node found on master server!" << endl;
+        return false;
+    }
 
     // Object Array
     for (int i = 0; i < main_object.size(); i++) {
