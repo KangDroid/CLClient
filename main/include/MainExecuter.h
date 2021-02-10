@@ -44,6 +44,8 @@ protected:
 
     bool request_container();
 
+    http_response get_response(http_client &client, http_request &request_type);
+
 public:
     MainExecutor(int argc, char **argv);
 

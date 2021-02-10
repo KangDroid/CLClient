@@ -64,17 +64,10 @@ bool MainExecutor::request_container() {
     main_post["computeRegion"] = json::value::string(dto.computeRegion);
 
     request_type.set_body(main_post);
-    json::value response_data;
 
-    try {
-        client_req.request(request_type).then([&response_data](http_response hr) {
-            response_data = hr.extract_json().get();
-        }).wait();
-    } catch (const exception &expn) {
-        cerr << "Error: ";
-        cerr << expn.what() << endl;
-        return false;
-    }
+    // The Response
+    http_response web_response = get_response(client_req, request_type);
+    json::value response_data = web_response.extract_json().get();
 
     cout << endl << endl;
     string err_message = response_data["errorMessage"].as_string();
@@ -113,17 +106,7 @@ bool MainExecutor::show_regions() {
 
     // The body
     http_request request_type(methods::GET);
-    http_response response;
-
-    try {
-        client_req.request(request_type).then([&response](http_response hr) {
-            response = hr;
-        }).wait();
-    } catch (const exception &expn) {
-        cerr << "Error: ";
-        cerr << expn.what() << endl;
-        return false;
-    }
+    http_response response = get_response(client_req, request_type);
 
     json::value main_object = response.extract_json().get();
 
@@ -140,4 +123,15 @@ bool MainExecutor::show_regions() {
     }
 
     return (response.status_code() == http::status_codes::OK);
+}
+
+http_response MainExecutor::get_response(http_client &client, http_request &request_type) {
+    http_response ret_response;
+    try {
+        ret_response = client.request(request_type).get();
+    } catch (const exception &expn) {
+        cerr << "Error: ";
+        cerr << expn.what() << endl;
+    }
+    return ret_response;
 }
