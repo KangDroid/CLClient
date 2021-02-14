@@ -18,6 +18,9 @@ using namespace web::http;
 using namespace web::http::client;
 
 class ServerManagement {
+private:
+    Return<http_client*> create_client(string& url, int timeout);
+
 public:
     string server_base_url; // must include ports as well, i.e http://localhost:8080
 

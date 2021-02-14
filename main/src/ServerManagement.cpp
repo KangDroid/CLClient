@@ -16,17 +16,15 @@ Return<http_response> ServerManagement::get_response(http_client &client, http_r
 
 Return<bool> ServerManagement::is_server_alive() {
     string final_url = server_base_url + "/api/client/alive";
-    http_client* client_request = nullptr;
 
-    try {
-        client_request = new http_client(final_url);
-    } catch (const exception& expn) {
-        Return<bool> tmp_value = Return<bool>(false);
-        tmp_value.append_err_message(expn.what());
-        tmp_value.append_err_message("i.e: http://localhost:8080");
-        return tmp_value;
+    // Create http_client
+    Return<http_client*> client_request_r = create_client(final_url, 5);
+    if (!client_request_r.get_message().empty() || client_request_r.inner_values == nullptr) {
+        Return<bool> error_return(false);
+        error_return.append_err_message(client_request_r.get_message());
+        return error_return;
     }
-
+    http_client* client_request = client_request_r.inner_values;
     http_request request_type(methods::GET);
 
     Return<http_response> response = get_response(*client_request, request_type);
@@ -40,4 +38,21 @@ Return<bool> ServerManagement::is_server_alive() {
 
     delete client_request;
     return Return<bool>(true);
+}
+
+Return<http_client *> ServerManagement::create_client(string &url, int timeout) {
+    http_client_config client_config;
+    client_config.set_timeout(chrono::seconds(timeout));
+    http_client* client_return = nullptr;
+
+    try {
+        client_return = new http_client(url, client_config);
+    } catch (const exception& expn) {
+        Return<http_client*> ret_value(nullptr);
+        ret_value.append_err_message(expn.what());
+        ret_value.append_err_message("i.e: http://localhost:8080");
+        return ret_value;
+    }
+
+    return Return<http_client*>(client_return);
 }
