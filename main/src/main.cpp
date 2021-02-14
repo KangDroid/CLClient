@@ -50,7 +50,7 @@ int print_menu(ServerManagement& server_management) {
                 KDRPrinter::print_error("Already Logged-In!");
                 break;
             }
-            Return<bool> response = server_management.login(false);
+            Return<bool> response = server_management.login(true);
             if (!response.get_message().empty()) {
                 KDRPrinter::print_error(response.get_message());
             } else {
