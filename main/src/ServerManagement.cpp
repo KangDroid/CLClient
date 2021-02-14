@@ -61,8 +61,13 @@ ServerManagement::ServerManagement() {
     this->user_token = nullptr;
 }
 
-Return<bool> ServerManagement::login() {
-    string final_url = server_base_url + "/api/client/login";
+Return<bool> ServerManagement::login(const bool& is_register) {
+    string final_url;
+    if (is_register) {
+        final_url = server_base_url + "/api/client/register";
+    } else {
+        final_url = server_base_url + "/api/client/login";
+    }
 
     // Input Password
     string* id = new string();
@@ -102,8 +107,10 @@ Return<bool> ServerManagement::login() {
         error_return.append_err_message(error_message);
         return error_return;
     } else {
-        user_token = new string();
-        *user_token = login_response_dto["token"].as_string();
+        if (!is_register) {
+            user_token = new string();
+            *user_token = login_response_dto["token"].as_string();
+        }
     }
 
     // Remove All Information[Dynamically]

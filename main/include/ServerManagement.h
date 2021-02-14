@@ -32,7 +32,7 @@ public:
 public:
     Return<http_response> get_response(http_client &client, http_request &request_type);
     Return<bool> is_server_alive();
-    Return<bool> login();
+    Return<bool> login(const bool& is_register);
     ServerManagement();
     ~ServerManagement();
 };

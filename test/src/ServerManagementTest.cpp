@@ -42,9 +42,20 @@ TEST_F(ServerManagementTest, isServerAliveWorking) {
     EXPECT_EQ(response.inner_values, false);
 }
 
+//TEST_F(ServerManagementTest, isRegisterWorking) {
+//    server_management.server_base_url = "http://localhost:8080";
+//    Return<bool> response = server_management.login(true);
+//
+//    EXPECT_EQ(response.get_message().size(), 0);
+//
+//    if (!response.get_message().empty()) {
+//        KDRPrinter::print_error(response.get_message());
+//    }
+//}
+//
 //TEST_F(ServerManagementTest, isLoginWorking) {
 //    server_management.server_base_url = "http://localhost:8080";
-//    Return<bool> response = server_management.login();
+//    Return<bool> response = server_management.login(false);
 //    if (!response.get_message().empty()) {
 //        KDRPrinter::print_error(response.get_message());
 //    }
