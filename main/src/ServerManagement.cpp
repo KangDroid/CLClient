@@ -23,7 +23,7 @@ Return<bool> ServerManagement::is_server_alive() {
     } catch (const exception& expn) {
         Return<bool> tmp_value = Return<bool>(false);
         tmp_value.append_err_message(expn.what());
-        tmp_value.append_err_message("\ni.e: http://localhost:8080");
+        tmp_value.append_err_message("i.e: http://localhost:8080");
         return tmp_value;
     }
 

@@ -6,13 +6,14 @@
 #define CLCLIENT_RETURN_H
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
 template<typename TARGET>
 class Return {
 private:
-    string error_message;
+    vector<string> error_message;
 
 public:
     TARGET inner_values;
@@ -23,40 +24,44 @@ public:
      * get_message: Return Error Message.
      * @return error_message
      */
-    string &get_message() {
+    vector<string> &get_message() {
         return this->error_message;
     }
 
     /**
-     * set_err_message: Set param string to error_message.
-     * Warning: "SET" error message means it will overwrite current content of
-     * error_message. Use append_err_message to append it.
-     * @param message to set
-     */
-    void set_err_message(string message) {
-        this->error_message = message;
-    }
-
-    /**
-     * append_err_message: Append param string to error_message
-     * This won't reset current content of error_message, unlike set_err_message.
+     * append_err_message: Append param string to error_message[vector]
      * @param message to append.
      */
     void append_err_message(string message) {
-        this->error_message += message;
+        error_message.push_back(message);
     }
 
-    Return() {
-        this->error_message = "";
+    /**
+     * append_err_message: Append param vector string to error_message[vector]
+     * @param message to append
+     */
+    void append_err_message(vector<string>& message) {
+        for (const string& tmp : message) {
+            error_message.push_back(tmp);
+        }
     }
 
     Return(const string &message) {
-        this->error_message = message;
+        error_message.push_back(message);
     }
 
     Return(TARGET inner_values) {
         this->inner_values = inner_values;
-        this->error_message = "";
+    }
+
+    Return(TARGET inner_values, const string& message) {
+        this->inner_values = inner_values;
+        error_message.push_back(message);
+    }
+
+    Return(TARGET inner_values, string& message) {
+        this->inner_values = inner_values;
+        error_message.push_back(message);
     }
 };
 

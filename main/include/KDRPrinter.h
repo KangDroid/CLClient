@@ -6,6 +6,7 @@
 #define CLCLIENT_KDRPRINTER_H
 
 #include <iostream>
+#include <vector>
 
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
@@ -16,6 +17,7 @@ class KDRPrinter {
 public:
     static void print_error(string& error_message);
     static void print_error(const string& error_message);
+    static void print_error(vector<string>& error_message);
 };
 
 
