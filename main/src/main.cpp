@@ -27,6 +27,7 @@ int main(int argc, char** argv) {
 
     if (vm.empty() || vm.count("help")) {
         cout << desc << endl;
+        return 0;
     }
 
     if (vm.contains("master-ip")) {
