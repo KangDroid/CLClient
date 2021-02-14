@@ -42,6 +42,8 @@ int main(int argc, char** argv) {
     if (!server_alive.get_message().empty()) {
         KDRPrinter::print_error(server_alive.get_message());
         return 1;
+    } else {
+        KDRPrinter::print_verbose("Connecting to server succeed!");
     }
     return 0;
 }
