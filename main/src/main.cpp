@@ -4,11 +4,8 @@
 
 #include <iostream>
 
-#include "MainExecuter.h"
-
 using namespace std;
 
-int main(int argc, char **argv) {
-    MainExecutor main_executor(argc, argv);
+int main(void) {
     return 0;
 }
