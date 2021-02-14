@@ -21,5 +21,9 @@ int main(int argc, char** argv) {
     } catch (const exception& expn) {
         KDRPrinter::print_error(string(expn.what()));
     }
+
+    if (vm.empty() || vm.count("help")) {
+        cout << desc << endl;
+    }
     return 0;
 }
