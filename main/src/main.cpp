@@ -36,5 +36,12 @@ int main(int argc, char** argv) {
         KDRPrinter::print_error("This Program needs Master-IP to continue!");
         return 1;
     }
+
+    // do work
+    Return<bool> server_alive = server_management.is_server_alive();
+    if (!server_alive.get_message().empty()) {
+        KDRPrinter::print_error(server_alive.get_message());
+        return 1;
+    }
     return 0;
 }
