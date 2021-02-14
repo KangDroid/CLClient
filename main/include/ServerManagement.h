@@ -19,14 +19,22 @@ using namespace web::http::client;
 
 class ServerManagement {
 private:
+    string* user_token;
     Return<http_client*> create_client(string& url, int timeout);
+    void input_password(string* id, string* password);
 
 public:
     string server_base_url; // must include ports as well, i.e http://localhost:8080
 
 public:
+    Return<bool> needs_login();
+
+public:
     Return<http_response> get_response(http_client &client, http_request &request_type);
     Return<bool> is_server_alive();
+    Return<bool> login();
+    ServerManagement();
+    ~ServerManagement();
 };
 
 

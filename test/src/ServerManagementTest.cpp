@@ -42,4 +42,12 @@ TEST_F(ServerManagementTest, isServerAliveWorking) {
     EXPECT_EQ(response.inner_values, false);
 }
 
+//TEST_F(ServerManagementTest, isLoginWorking) {
+//    server_management.server_base_url = "http://localhost:8080";
+//    Return<bool> response = server_management.login();
+//    if (!response.get_message().empty()) {
+//        KDRPrinter::print_error(response.get_message());
+//    }
+//}
+
 #endif //CLCLIENT_SERVERMANAGEMENTTEST_H

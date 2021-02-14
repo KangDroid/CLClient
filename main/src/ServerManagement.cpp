@@ -56,3 +56,83 @@ Return<http_client *> ServerManagement::create_client(string &url, int timeout) 
 
     return Return<http_client*>(client_return);
 }
+
+ServerManagement::ServerManagement() {
+    this->user_token = nullptr;
+}
+
+Return<bool> ServerManagement::login() {
+    string final_url = server_base_url + "/api/client/login";
+
+    // Input Password
+    string* id = new string();
+    string* password = new string();
+    input_password(id, password);
+
+    // Login User!
+    http_client* client_request = nullptr;
+    http_request request_type(methods::POST);
+    Return<http_client*> client_response = create_client(final_url, 5);
+    if (!client_response.get_message().empty()) {
+        Return<bool> error_return(false);
+        error_return.append_err_message(client_response.get_message());
+        return error_return;
+    }
+    client_request = client_response.inner_values;
+
+    // Put Information
+    json::value login_dto = json::value::object();
+    login_dto["userName"] = json::value::string(*id);
+    login_dto["userPassword"] = json::value::string(*password);
+    request_type.set_body(login_dto);
+
+    // Get Response
+    Return<http_response> response = get_response(*client_request, request_type);
+    if (!response.get_message().empty()) {
+        Return<bool> error_return(false);
+        error_return.append_err_message(response.get_message());
+        return error_return;
+    }
+
+    // Parse Response
+    json::value login_response_dto = response.inner_values.extract_json().get();
+    string error_message = login_response_dto["errorMessage"].as_string();
+    if (!error_message.empty()) {
+        Return<bool> error_return(false);
+        error_return.append_err_message(error_message);
+        return error_return;
+    } else {
+        user_token = new string();
+        *user_token = login_response_dto["token"].as_string();
+    }
+
+    // Remove All Information[Dynamically]
+    delete client_request; client_request = nullptr;
+    delete id; id = nullptr;
+    delete password; password = nullptr;
+
+    return Return<bool>(true);
+}
+
+Return<bool> ServerManagement::needs_login() {
+    return Return<bool>((user_token == nullptr));
+}
+
+void ServerManagement::input_password(string *id, string* password) {
+    // Get ID
+    cout << "Input ID: ";
+    getline(cin, *id);
+
+    // Get Password
+    cout << "Input Password: ";
+    // Disable Terminal Echo
+    KDRPrinter::terminal_echo(true);
+    getline(cin, *password);
+    KDRPrinter::terminal_echo(false); // Reset Terminal Echo
+}
+
+ServerManagement::~ServerManagement() {
+    if (user_token != nullptr) {
+        delete user_token;
+    }
+}

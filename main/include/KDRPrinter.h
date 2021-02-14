@@ -8,6 +8,9 @@
 #include <iostream>
 #include <vector>
 
+#include <termios.h>
+#include <unistd.h>
+
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
 #define GREEN   "\033[32m"
@@ -22,6 +25,8 @@ public:
     static void print_verbose(string& verbose_message);
     static void print_verbose(const string& verbose_message);
     static void print_verbose(vector<string>& verbose_message);
+
+    static void terminal_echo(const bool& disable_echo);
 };
 
 

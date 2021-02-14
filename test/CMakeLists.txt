@@ -24,7 +24,7 @@ include_directories(googletest/googletest/include)
 include_directories(googletest/googlemock/include)
 
 #Define your executable
-add_executable(CLClientTest src/test_main.cpp ../main/src/ServerManagement.cpp ../main/include/Return.h src/ServerManagementTest.cpp)
+add_executable(CLClientTest src/test_main.cpp ../main/src/KDRPrinter.cpp ../main/src/ServerManagement.cpp ../main/include/Return.h src/ServerManagementTest.cpp)
 
 #Link with GoogleTest
 target_link_libraries(CLClientTest gtest gtest_main)

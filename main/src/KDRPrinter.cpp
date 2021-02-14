@@ -31,3 +31,21 @@ void KDRPrinter::print_verbose(vector<string> &verbose_message) {
         cout << GREEN << "[Verbose]: " << vm << RESET << endl;
     }
 }
+
+void KDRPrinter::terminal_echo(const bool& disable_echo) {
+    static struct termios old_termios, new_termios;
+
+    // Get Current TERMIOS
+    tcgetattr(STDIN_FILENO, &old_termios);
+    new_termios = old_termios;
+
+    // Disable Echo
+    if (disable_echo) {
+        new_termios.c_lflag &= ~(ECHO);
+    } else {
+        new_termios.c_lflag |= ECHO;
+    }
+
+    // Set
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
+}
