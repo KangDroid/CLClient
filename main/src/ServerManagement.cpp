@@ -21,7 +21,7 @@ Return<bool> ServerManagement::is_server_alive() {
 
     Return<http_response> response = get_response(client_request, request_type);
 
-    if (response.get_message() != "") {
+    if (!response.get_message().empty()) {
         // Error Occured
         Return<bool> tmp_value = Return<bool>(false);
         tmp_value.append_err_message(response.get_message());
