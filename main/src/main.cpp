@@ -11,7 +11,54 @@
 using namespace std;
 using namespace boost::program_options;
 
+int print_menu(ServerManagement& server_management) {
+    string input_tmp;
+    int menu_selection;
+    cout << "KDR-Cloud Menu:" << endl;
+    cout << "1. Login" << endl;
+    cout << "2. Register" << endl;
+    cout << "0. Exit" << endl;
+    cout << endl;
+    cout << "Enter Menu Number: ";
+
+    // Get input
+    getline(cin, input_tmp);
+    try {
+        menu_selection = stoi(input_tmp);
+    } catch (const exception& expn) {
+        KDRPrinter::print_error(expn.what());
+        KDRPrinter::print_error("Please input correct number!");
+        return 0;
+    }
+
+    switch(menu_selection) {
+        case 1: {
+            Return<bool> response = server_management.login(false);
+            if (!response.get_message().empty()) {
+                KDRPrinter::print_error(response.get_message());
+            } else {
+                KDRPrinter::print_verbose("Login Succeed!");
+            }
+        }
+            break;
+        case 2: {
+            Return<bool> response = server_management.login(false);
+            if (!response.get_message().empty()) {
+                KDRPrinter::print_error(response.get_message());
+            } else {
+                KDRPrinter::print_verbose("Register Succeed!");
+            }
+        }
+            break;
+        default:
+            break;
+    }
+
+    return menu_selection;
+}
+
 int main(int argc, char** argv) {
+    int menu_selection;
     ServerManagement server_management;
     variables_map vm;
     options_description desc("Supported Options/Args");
@@ -45,5 +92,9 @@ int main(int argc, char** argv) {
     } else {
         KDRPrinter::print_verbose("Connecting to server succeed!");
     }
+
+    do {
+        menu_selection = print_menu(server_management);
+    } while(menu_selection != 0);
     return 0;
 }
