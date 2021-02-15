@@ -14,13 +14,13 @@ using namespace boost::program_options;
 int print_menu(ServerManagement& server_management) {
     string input_tmp;
     int menu_selection;
-    cout << "KDR-Cloud Menu:" << endl;
-    cout << "1. Login" << endl;
-    cout << "2. Register" << endl;
-    cout << "3. Request Image" << endl;
-    cout << "0. Exit" << endl;
-    cout << endl;
-    cout << "Enter Menu Number: ";
+    KDRPrinter::print_normal("KDR-Cloud Menu:");
+    KDRPrinter::print_normal("1. Login");
+    KDRPrinter::print_normal("2. Register");
+    KDRPrinter::print_normal("3. Request Image");
+    KDRPrinter::print_normal("0. Exit");
+    KDRPrinter::print_normal("");
+    KDRPrinter::print_normal("Enter Menu Number: ", false);
 
     // Get input
     getline(cin, input_tmp);
