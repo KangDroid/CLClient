@@ -20,7 +20,7 @@ using namespace web::http::client;
 class ServerManagement {
 private:
     string* user_token;
-    Return<http_client*> create_client(string& url, int timeout);
+    Return<http_client*> create_client(string& url, int timeout = 5);
     void input_password(string* id, string* password);
 
 public:

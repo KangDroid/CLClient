@@ -18,7 +18,7 @@ Return<bool> ServerManagement::is_server_alive() {
     string final_url = server_base_url + "/api/client/alive";
 
     // Create http_client
-    Return<http_client*> client_request_r = create_client(final_url, 5);
+    Return<http_client*> client_request_r = create_client(final_url);
     if (!client_request_r.get_message().empty() || client_request_r.inner_values == nullptr) {
         Return<bool> error_return(false);
         error_return.append_err_message(client_request_r.get_message());
@@ -77,7 +77,7 @@ Return<bool> ServerManagement::login(const bool& is_register) {
     // Login User!
     http_client* client_request = nullptr;
     http_request request_type(methods::POST);
-    Return<http_client*> client_response = create_client(final_url, 5);
+    Return<http_client*> client_response = create_client(final_url);
     if (!client_response.get_message().empty()) {
         Return<bool> error_return(false);
         error_return.append_err_message(client_response.get_message());
@@ -149,7 +149,7 @@ Return<bool> ServerManagement::show_regions() {
     if (needs_login().inner_values) {
         return Return<bool>(false, "User did not logged in!");
     }
-    Return<http_client*> client_get = create_client(final_url, 5);
+    Return<http_client*> client_get = create_client(final_url);
     if (!client_get.get_message().empty()) {
         Return<bool> error_return(false);
         error_return.append_err_message(client_get.get_message());
