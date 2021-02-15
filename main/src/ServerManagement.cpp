@@ -158,10 +158,10 @@ Return<bool> ServerManagement::show_regions() {
     }
 
     for (int i = 0; i < response_json.size(); i++) {
-        cout << "Node " << i + 1 << ":" << endl;
-        cout << "Region: " << response_json[i]["regionName"].as_string() << endl;
-        cout << "Load: " << response_json[i]["nodeLoadPercentage"].as_string() << endl;
-        cout << endl;
+        KDRPrinter::print_normal("Node " + to_string(i + 1) + ":");
+        KDRPrinter::print_normal("Region: " + response_json[i]["regionName"].as_string());
+        KDRPrinter::print_normal("Load: " + response_json[i]["nodeLoadPercentage"].as_string());
+        KDRPrinter::print_normal("");
     }
 
     // Remove Information
