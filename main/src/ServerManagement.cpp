@@ -114,11 +114,11 @@ Return<bool> ServerManagement::needs_login() {
 
 void ServerManagement::input_password(string *id, string* password) {
     // Get ID
-    cout << "Input ID: ";
+    KDRPrinter::print_normal("Input ID: ", false);
     getline(cin, *id);
 
     // Get Password
-    cout << "Input Password: ";
+    KDRPrinter::print_normal("Input Password: ", false);
     // Disable Terminal Echo
     KDRPrinter::terminal_echo(true);
     getline(cin, *password);
