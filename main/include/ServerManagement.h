@@ -34,6 +34,7 @@ public:
     Return<bool> is_server_alive();
     Return<bool> login(const bool& is_register);
     Return<bool> show_regions();
+    Return<bool> create_image();
     ServerManagement();
     ~ServerManagement();
 };

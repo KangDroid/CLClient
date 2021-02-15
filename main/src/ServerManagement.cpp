@@ -170,3 +170,52 @@ Return<bool> ServerManagement::show_regions() {
 
     return Return<bool>(true);
 }
+
+Return<bool> ServerManagement::create_image() {
+    if (needs_login().inner_values) {
+        return Return<bool>(false, "User did not logged in!");
+    }
+    string final_url = server_base_url + "/api/client/node/create";
+    string region;
+    Return<bool> region_response = show_regions();
+    if (!region_response.inner_values) {
+        return region_response;
+    }
+
+    KDRPrinter::print_normal("Input Compute Region: ", false);
+    getline(cin, region);
+
+    Return<http_client*> client_response = create_client(final_url);
+    if (client_response.inner_values == nullptr) {
+        return Return<bool>(false, client_response.get_message());
+    }
+
+    // Set up Client Request
+    http_client* client = client_response.inner_values;
+    http_request client_req(methods::POST);
+    json::value main_send = json::value::object();
+    main_send["userToken"] = json::value::string(*user_token);
+    main_send["dockerId"] = json::value::string("");
+    main_send["computeRegion"] = json::value::string(region);
+    client_req.set_body(main_send);
+
+    // Request!
+    Return<http_response> ret_response = get_response(*client, client_req);
+    if (!ret_response.get_message().empty()) {
+        return Return<bool>(false, ret_response.get_message());
+    }
+
+    // Response?
+    json::value response_main = ret_response.inner_values.extract_json().get();
+    if (!response_main["errorMessage"].as_string().empty()) {
+        return Return<bool>(false, response_main["errorMessage"].as_string());
+    }
+    KDRPrinter::print_normal("Container-ID: " + response_main["containerId"].as_string());
+    KDRPrinter::print_normal("Successfully created on: " + response_main["regionLocation"].as_string());
+    KDRPrinter::print_normal("You can ssh within: \"ssh " + response_main["targetIpAddress"].as_string() +
+    " -p " + response_main["targetPort"].as_string() + "\"");
+
+    delete client; client = nullptr;
+
+    return Return<bool>(true);
+}
