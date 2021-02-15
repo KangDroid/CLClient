@@ -17,6 +17,7 @@ int print_menu(ServerManagement& server_management) {
     cout << "KDR-Cloud Menu:" << endl;
     cout << "1. Login" << endl;
     cout << "2. Register" << endl;
+    cout << "3. Request Image" << endl;
     cout << "0. Exit" << endl;
     cout << endl;
     cout << "Enter Menu Number: ";
@@ -55,6 +56,15 @@ int print_menu(ServerManagement& server_management) {
                 KDRPrinter::print_error(response.get_message());
             } else {
                 KDRPrinter::print_verbose("Register Succeed!");
+            }
+        }
+            break;
+        case 3: {
+            Return<bool> response = server_management.create_image();
+            if (!response.get_message().empty()) {
+                KDRPrinter::print_error(response.get_message());
+            } else {
+                KDRPrinter::print_verbose("Image Creation Succeed!");
             }
         }
             break;
