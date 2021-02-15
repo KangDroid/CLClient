@@ -33,6 +33,7 @@ public:
     Return<http_response> get_response(http_client &client, http_request &request_type);
     Return<bool> is_server_alive();
     Return<bool> login(const bool& is_register);
+    Return<bool> show_regions();
     ServerManagement();
     ~ServerManagement();
 };

@@ -143,3 +143,39 @@ ServerManagement::~ServerManagement() {
         delete user_token;
     }
 }
+
+Return<bool> ServerManagement::show_regions() {
+    string final_url = server_base_url + "/api/client/node/load";
+    if (needs_login().inner_values) {
+        return Return<bool>(false, "User did not logged in!");
+    }
+    Return<http_client*> client_get = create_client(final_url, 5);
+    if (!client_get.get_message().empty()) {
+        Return<bool> error_return(false);
+        error_return.append_err_message(client_get.get_message());
+        return error_return;
+    }
+    http_client* client = client_get.inner_values;
+    http_request client_request(methods::GET);
+
+    // Request!
+    Return<http_response> response = get_response(*client, client_request);
+    if (!response.get_message().empty()) {
+        Return<bool> error_return(false);
+        error_return.append_err_message(response.get_message());
+        return error_return;
+    }
+
+    // Parse Output
+    json::value response_json;
+    response_json = response.inner_values.extract_json().get();
+    for (int i = 0; i < response_json.size(); i++) {
+        cout << "Node " << i + 1 << ":" << endl;
+        cout << "Region: " << response_json[i]["regionName"].as_string() << endl;
+        cout << "Load: " << response_json[i]["nodeLoadPercentage"].as_string() << endl;
+        cout << endl;
+    }
+
+    // Remove Information
+    delete client; client = nullptr;
+}
