@@ -169,6 +169,11 @@ Return<bool> ServerManagement::show_regions() {
     // Parse Output
     json::value response_json;
     response_json = response.inner_values.extract_json().get();
+
+    if (response_json.size() == 0) {
+        return Return<bool>(false, "Compute Node is not registered on master server!");
+    }
+
     for (int i = 0; i < response_json.size(); i++) {
         cout << "Node " << i + 1 << ":" << endl;
         cout << "Region: " << response_json[i]["regionName"].as_string() << endl;
