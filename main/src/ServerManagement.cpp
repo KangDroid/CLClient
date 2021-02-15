@@ -20,9 +20,7 @@ Return<bool> ServerManagement::is_server_alive() {
     // Create http_client
     Return<http_client*> client_request_r = create_client(final_url);
     if (!client_request_r.get_message().empty() || client_request_r.inner_values == nullptr) {
-        Return<bool> error_return(false);
-        error_return.append_err_message(client_request_r.get_message());
-        return error_return;
+        return Return<bool>(false, client_request_r.get_message());
     }
     http_client* client_request = client_request_r.inner_values;
     http_request request_type(methods::GET);
@@ -31,9 +29,7 @@ Return<bool> ServerManagement::is_server_alive() {
 
     if (!response.get_message().empty()) {
         // Error Occured
-        Return<bool> tmp_value = Return<bool>(false);
-        tmp_value.append_err_message(response.get_message());
-        return tmp_value;
+        return Return<bool>(false, response.get_message());
     }
 
     delete client_request;
@@ -48,10 +44,7 @@ Return<http_client *> ServerManagement::create_client(string &url, int timeout) 
     try {
         client_return = new http_client(url, client_config);
     } catch (const exception& expn) {
-        Return<http_client*> ret_value(nullptr);
-        ret_value.append_err_message(expn.what());
-        ret_value.append_err_message("i.e: http://localhost:8080");
-        return ret_value;
+        return Return<http_client*>(nullptr, vector<string> {expn.what(), "i.e: http://localhost:8080"});
     }
 
     return Return<http_client*>(client_return);
@@ -79,9 +72,7 @@ Return<bool> ServerManagement::login(const bool& is_register) {
     http_request request_type(methods::POST);
     Return<http_client*> client_response = create_client(final_url);
     if (!client_response.get_message().empty()) {
-        Return<bool> error_return(false);
-        error_return.append_err_message(client_response.get_message());
-        return error_return;
+        return Return<bool>(false, client_response.get_message());
     }
     client_request = client_response.inner_values;
 
@@ -94,18 +85,14 @@ Return<bool> ServerManagement::login(const bool& is_register) {
     // Get Response
     Return<http_response> response = get_response(*client_request, request_type);
     if (!response.get_message().empty()) {
-        Return<bool> error_return(false);
-        error_return.append_err_message(response.get_message());
-        return error_return;
+        return Return<bool>(false, response.get_message());
     }
 
     // Parse Response
     json::value login_response_dto = response.inner_values.extract_json().get();
     string error_message = login_response_dto["errorMessage"].as_string();
     if (!error_message.empty()) {
-        Return<bool> error_return(false);
-        error_return.append_err_message(error_message);
-        return error_return;
+        return Return<bool>(false, error_message);
     } else {
         if (!is_register) {
             user_token = new string();
@@ -151,9 +138,7 @@ Return<bool> ServerManagement::show_regions() {
     }
     Return<http_client*> client_get = create_client(final_url);
     if (!client_get.get_message().empty()) {
-        Return<bool> error_return(false);
-        error_return.append_err_message(client_get.get_message());
-        return error_return;
+        return Return<bool>(false, client_get.get_message());
     }
     http_client* client = client_get.inner_values;
     http_request client_request(methods::GET);
@@ -161,9 +146,7 @@ Return<bool> ServerManagement::show_regions() {
     // Request!
     Return<http_response> response = get_response(*client, client_request);
     if (!response.get_message().empty()) {
-        Return<bool> error_return(false);
-        error_return.append_err_message(response.get_message());
-        return error_return;
+        return Return<bool>(false, response.get_message());
     }
 
     // Parse Output

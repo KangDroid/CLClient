@@ -46,6 +46,14 @@ public:
         }
     }
 
+    Return(vector<string>& message) {
+        error_message = message;
+    }
+
+    Return(const vector<string>& message) {
+        error_message = message;
+    }
+
     Return(const string &message) {
         error_message.push_back(message);
     }
@@ -62,6 +70,16 @@ public:
     Return(TARGET inner_values, string& message) {
         this->inner_values = inner_values;
         error_message.push_back(message);
+    }
+
+    Return(TARGET inner_values, vector<string>& message) {
+        this->inner_values = inner_values;
+        this->error_message = message;
+    }
+
+    Return(TARGET inner_values, const vector<string>& message) {
+        this->inner_values = inner_values;
+        this->error_message = message;
     }
 };
 
