@@ -212,7 +212,7 @@ Return<bool> ServerManagement::create_image() {
     }
     KDRPrinter::print_normal("Container-ID: " + response_main["containerId"].as_string());
     KDRPrinter::print_normal("Successfully created on: " + response_main["regionLocation"].as_string());
-    KDRPrinter::print_normal("You can ssh within: \"ssh " + response_main["targetIpAddress"].as_string() +
+    KDRPrinter::print_normal("You can ssh within: \"ssh root@" + response_main["targetIpAddress"].as_string() +
     " -p " + response_main["targetPort"].as_string() + "\"");
 
     delete client; client = nullptr;
