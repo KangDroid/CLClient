@@ -183,4 +183,6 @@ Return<bool> ServerManagement::show_regions() {
 
     // Remove Information
     delete client; client = nullptr;
+
+    return Return<bool>(true);
 }
