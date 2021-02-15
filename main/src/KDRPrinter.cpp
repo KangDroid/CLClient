@@ -49,3 +49,29 @@ void KDRPrinter::terminal_echo(const bool& disable_echo) {
     // Set
     tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
 }
+
+void KDRPrinter::print_normal(string &normal_message, bool newline) {
+    if (newline) {
+        cout << GREEN << normal_message << RESET << endl;
+    } else {
+        cout << GREEN << normal_message << RESET;
+    }
+}
+
+void KDRPrinter::print_normal(const string &normal_message, bool newline) {
+    if (newline) {
+        cout << GREEN << normal_message << RESET << endl;
+    } else {
+        cout << GREEN << normal_message << RESET;
+    }
+}
+
+void KDRPrinter::print_normal(vector<string> normal_message, bool newline) {
+    for (string tmp : normal_message) {
+        if (newline) {
+            cout << GREEN << tmp << RESET << endl;
+        } else {
+            cout << GREEN << tmp << RESET;
+        }
+    }
+}

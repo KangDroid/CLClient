@@ -25,6 +25,9 @@ public:
     static void print_verbose(string& verbose_message);
     static void print_verbose(const string& verbose_message);
     static void print_verbose(vector<string>& verbose_message);
+    static void print_normal(string& normal_message, bool newline = true);
+    static void print_normal(const string& normal_message, bool newline = true);
+    static void print_normal(vector<string> normal_message, bool newline = true);
 
     static void terminal_echo(const bool& disable_echo);
 };
