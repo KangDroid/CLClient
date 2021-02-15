@@ -123,6 +123,7 @@ void ServerManagement::input_password(string *id, string* password) {
     KDRPrinter::terminal_echo(true);
     getline(cin, *password);
     KDRPrinter::terminal_echo(false); // Reset Terminal Echo
+    KDRPrinter::print_normal("");
 }
 
 ServerManagement::~ServerManagement() {
