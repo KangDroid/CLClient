@@ -25,6 +25,7 @@ int print_menu(ServerManagement &server_management) {
     KDRPrinter::print_normal("1. Login");
     KDRPrinter::print_normal("2. Register");
     KDRPrinter::print_normal("3. Request Image");
+    KDRPrinter::print_normal("4. List Registered Container");
     KDRPrinter::print_normal("0. Exit");
     KDRPrinter::print_normal("");
     KDRPrinter::print_normal("Enter Menu Number: ", false);
@@ -72,6 +73,13 @@ int print_menu(ServerManagement &server_management) {
                 KDRPrinter::print_error(response.get_message());
             } else {
                 KDRPrinter::print_verbose("Image Creation Succeed!");
+            }
+        }
+            break;
+        case 4: {
+            Return<bool> response = server_management.show_container();
+            if (!response.get_message().empty()) {
+                KDRPrinter::print_error(response.get_message());
             }
         }
             break;
