@@ -17,7 +17,7 @@ void press_enter() {
     getline(cin, random_value);
 }
 
-int print_menu(ServerManagement& server_management) {
+int print_menu(ServerManagement &server_management) {
     system("clear");
     string input_tmp;
     int menu_selection;
@@ -33,13 +33,13 @@ int print_menu(ServerManagement& server_management) {
     getline(cin, input_tmp);
     try {
         menu_selection = stoi(input_tmp);
-    } catch (const exception& expn) {
+    } catch (const exception &expn) {
         KDRPrinter::print_error(expn.what());
         KDRPrinter::print_error("Please input correct number!");
         return 0;
     }
 
-    switch(menu_selection) {
+    switch (menu_selection) {
         case 1: {
             if (!server_management.needs_login().inner_values) {
                 KDRPrinter::print_error("Already Logged-In!");
@@ -82,7 +82,7 @@ int print_menu(ServerManagement& server_management) {
     return menu_selection;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     int menu_selection;
     ServerManagement server_management;
     variables_map vm;
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
             ("master-ip", value<string>(), "Master IP to connect");
     try {
         store(parse_command_line(argc, argv, desc), vm);
-    } catch (const exception& expn) {
+    } catch (const exception &expn) {
         KDRPrinter::print_error(string(expn.what()));
         return 1;
     }
@@ -123,6 +123,6 @@ int main(int argc, char** argv) {
         if (menu_selection != 0) {
             press_enter();
         }
-    } while(menu_selection != 0);
+    } while (menu_selection != 0);
     return 0;
 }

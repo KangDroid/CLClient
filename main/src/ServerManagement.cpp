@@ -8,7 +8,7 @@ Return<http_response> ServerManagement::get_response(http_client &client, http_r
     http_response ret_response;
     try {
         ret_response = client.request(request_type).get();
-    } catch (const exception& expn) {
+    } catch (const exception &expn) {
         return Return<http_response>(expn.what());
     }
     return Return<http_response>(ret_response);
@@ -18,11 +18,11 @@ Return<bool> ServerManagement::is_server_alive() {
     string final_url = server_base_url + "/api/client/alive";
 
     // Create http_client
-    Return<http_client*> client_request_r = create_client(final_url);
+    Return<http_client *> client_request_r = create_client(final_url);
     if (!client_request_r.get_message().empty() || client_request_r.inner_values == nullptr) {
         return Return<bool>(false, client_request_r.get_message());
     }
-    http_client* client_request = client_request_r.inner_values;
+    http_client *client_request = client_request_r.inner_values;
     http_request request_type(methods::GET);
 
     Return<http_response> response = get_response(*client_request, request_type);
@@ -39,22 +39,22 @@ Return<bool> ServerManagement::is_server_alive() {
 Return<http_client *> ServerManagement::create_client(string &url, int timeout) {
     http_client_config client_config;
     client_config.set_timeout(chrono::seconds(timeout));
-    http_client* client_return = nullptr;
+    http_client *client_return = nullptr;
 
     try {
         client_return = new http_client(url, client_config);
-    } catch (const exception& expn) {
-        return Return<http_client*>(nullptr, vector<string> {expn.what(), "i.e: http://localhost:8080"});
+    } catch (const exception &expn) {
+        return Return<http_client *>(nullptr, vector<string>{expn.what(), "i.e: http://localhost:8080"});
     }
 
-    return Return<http_client*>(client_return);
+    return Return<http_client *>(client_return);
 }
 
 ServerManagement::ServerManagement() {
     this->user_token = nullptr;
 }
 
-Return<bool> ServerManagement::login(const bool& is_register) {
+Return<bool> ServerManagement::login(const bool &is_register) {
     string final_url;
     if (is_register) {
         final_url = server_base_url + "/api/client/register";
@@ -63,14 +63,14 @@ Return<bool> ServerManagement::login(const bool& is_register) {
     }
 
     // Input Password
-    string* id = new string();
-    string* password = new string();
+    string *id = new string();
+    string *password = new string();
     input_password(id, password);
 
     // Login User!
-    http_client* client_request = nullptr;
+    http_client *client_request = nullptr;
     http_request request_type(methods::POST);
-    Return<http_client*> client_response = create_client(final_url);
+    Return<http_client *> client_response = create_client(final_url);
     if (!client_response.get_message().empty()) {
         return Return<bool>(false, client_response.get_message());
     }
@@ -101,9 +101,12 @@ Return<bool> ServerManagement::login(const bool& is_register) {
     }
 
     // Remove All Information[Dynamically]
-    delete client_request; client_request = nullptr;
-    delete id; id = nullptr;
-    delete password; password = nullptr;
+    delete client_request;
+    client_request = nullptr;
+    delete id;
+    id = nullptr;
+    delete password;
+    password = nullptr;
 
     return Return<bool>(true);
 }
@@ -112,7 +115,7 @@ Return<bool> ServerManagement::needs_login() {
     return Return<bool>((user_token == nullptr));
 }
 
-void ServerManagement::input_password(string *id, string* password) {
+void ServerManagement::input_password(string *id, string *password) {
     // Get ID
     KDRPrinter::print_normal("Input ID: ", false);
     getline(cin, *id);
@@ -137,11 +140,11 @@ Return<bool> ServerManagement::show_regions() {
     if (needs_login().inner_values) {
         return Return<bool>(false, "User did not logged in!");
     }
-    Return<http_client*> client_get = create_client(final_url);
+    Return<http_client *> client_get = create_client(final_url);
     if (!client_get.get_message().empty()) {
         return Return<bool>(false, client_get.get_message());
     }
-    http_client* client = client_get.inner_values;
+    http_client *client = client_get.inner_values;
     http_request client_request(methods::GET);
 
     // Request!
@@ -166,7 +169,8 @@ Return<bool> ServerManagement::show_regions() {
     }
 
     // Remove Information
-    delete client; client = nullptr;
+    delete client;
+    client = nullptr;
 
     return Return<bool>(true);
 }
@@ -185,13 +189,13 @@ Return<bool> ServerManagement::create_image() {
     KDRPrinter::print_normal("Input Compute Region: ", false);
     getline(cin, region);
 
-    Return<http_client*> client_response = create_client(final_url);
+    Return<http_client *> client_response = create_client(final_url);
     if (client_response.inner_values == nullptr) {
         return Return<bool>(false, client_response.get_message());
     }
 
     // Set up Client Request
-    http_client* client = client_response.inner_values;
+    http_client *client = client_response.inner_values;
     http_request client_req(methods::POST);
     json::value main_send = json::value::object();
     main_send["userToken"] = json::value::string(*user_token);
@@ -213,9 +217,10 @@ Return<bool> ServerManagement::create_image() {
     KDRPrinter::print_normal("Container-ID: " + response_main["containerId"].as_string());
     KDRPrinter::print_normal("Successfully created on: " + response_main["regionLocation"].as_string());
     KDRPrinter::print_normal("You can ssh within: \"ssh root@" + response_main["targetIpAddress"].as_string() +
-    " -p " + response_main["targetPort"].as_string() + "\"");
+                             " -p " + response_main["targetPort"].as_string() + "\"");
 
-    delete client; client = nullptr;
+    delete client;
+    client = nullptr;
 
     return Return<bool>(true);
 }

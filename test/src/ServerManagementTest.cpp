@@ -16,7 +16,7 @@ using namespace web::http::client;
 #ifndef CLCLIENT_SERVERMANAGEMENTTEST_H
 #define CLCLIENT_SERVERMANAGEMENTTEST_H
 
-class ServerManagementTest: public testing::Test {
+class ServerManagementTest : public testing::Test {
 public:
     ServerManagement server_management;
 };

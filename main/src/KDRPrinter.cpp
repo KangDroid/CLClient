@@ -13,7 +13,7 @@ void KDRPrinter::print_error(const string &error_message) {
 }
 
 void KDRPrinter::print_error(vector<string> &error_message) {
-    for (const string& er_message : error_message) {
+    for (const string &er_message : error_message) {
         cerr << RED << "[Error]: " << er_message << RESET << endl;
     }
 }
@@ -32,7 +32,7 @@ void KDRPrinter::print_verbose(vector<string> &verbose_message) {
     }
 }
 
-void KDRPrinter::terminal_echo(const bool& disable_echo) {
+void KDRPrinter::terminal_echo(const bool &disable_echo) {
     static struct termios old_termios, new_termios;
 
     // Get Current TERMIOS
