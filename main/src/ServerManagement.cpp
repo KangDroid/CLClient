@@ -264,12 +264,9 @@ Return<bool> ServerManagement::show_container() {
         KDRPrinter::print_normal("Container Compute Region: " + response_main[i]["computeRegion"].as_string());
         KDRPrinter::print_normal("");
     }
-    if (!response_main["errorMessage"].as_string().empty()) {
-        return Return<bool>(false, response_main["errorMessage"].as_string());
-    }
 
     delete client;
     client = nullptr;
 
-    Return<bool>(true);
+    return Return<bool>(true);
 }
