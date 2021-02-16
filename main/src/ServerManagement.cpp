@@ -254,6 +254,10 @@ Return<bool> ServerManagement::show_container() {
 
     // Response?
     json::value response_main = ret_response.inner_values.extract_json().get();
+    if (response_main.size() == 0) {
+        KDRPrinter::print_normal("User did not created any containers!");
+        return Return<bool>(true);
+    }
     for (int i = 0; i < response_main.size(); i++) {
         if (!response_main[i]["errorMessage"].as_string().empty()) {
             return Return<bool>(false, response_main[i]["errorMessage"].as_string());
