@@ -42,6 +42,8 @@ public:
 
     Return<bool> create_image();
 
+    Return<bool> show_container();
+
     ServerManagement();
 
     ~ServerManagement();
