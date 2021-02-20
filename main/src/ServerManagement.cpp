@@ -277,3 +277,59 @@ Return<bool> ServerManagement::show_container() {
 
     return Return<bool>(true);
 }
+
+Return<bool> ServerManagement::restart_container() {
+    int user_input;
+    string final_url = server_base_url + "/api/client/restart";
+
+    // Needs to check Login
+    if (needs_login().inner_values) {
+        return Return<bool>(false, "User did not logged in!");
+    }
+
+    Return<bool> container_check = show_container();
+    if (!container_check.inner_values) return container_check;
+
+    // Let user input number
+    KDRPrinter::print_normal("Input number of container instance to restart: ", false);
+    cin >> user_input;
+    if (user_input < 1 || user_input > container_information.size()) {
+        return Return<bool>(false, "Invalid Range Input");
+    }
+
+    // Target Image
+    ContainerInformation chosen_container = container_information[user_input - 1];
+
+    Return<http_client *> client_response = create_client(final_url);
+    if (client_response.inner_values == nullptr) {
+        return Return<bool>(false, client_response.get_message());
+    }
+
+    // Set up Client Request
+    http_client *client = client_response.inner_values;
+    http_request client_req(methods::GET);
+    json::value main_send = json::value::object();
+    main_send["userToken"] = json::value::string(*user_token);
+    main_send["containerId"] = json::value::string(chosen_container.container_id);
+    client_req.set_body(main_send);
+
+    // Request!
+    Return<http_response> ret_response = get_response(*client, client_req);
+    if (!ret_response.get_message().empty()) {
+        return Return<bool>(false, ret_response.get_message());
+    }
+
+    // Response?
+    json::value response_main = ret_response.inner_values.extract_json().get();
+    string response_str = response_main["errorMessage"].as_string();
+    if (!response_str.empty()) {
+        return Return<bool>(false, response_str);
+    }
+
+    delete client;
+    client = nullptr;
+
+    KDRPrinter::print_normal("Successfully restarted container ID: " + chosen_container.container_id);
+
+    return Return<bool>(true);
+}

@@ -48,6 +48,8 @@ public:
 
     Return<bool> show_container();
 
+    Return<bool> restart_container();
+
     ServerManagement();
 
     ~ServerManagement();
