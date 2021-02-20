@@ -307,7 +307,7 @@ Return<bool> ServerManagement::restart_container() {
 
     // Set up Client Request
     http_client *client = client_response.inner_values;
-    http_request client_req(methods::GET);
+    http_request client_req(methods::POST);
     json::value main_send = json::value::object();
     main_send["userToken"] = json::value::string(*user_token);
     main_send["containerId"] = json::value::string(chosen_container.container_id);
