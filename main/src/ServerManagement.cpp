@@ -279,6 +279,7 @@ Return<bool> ServerManagement::show_container() {
 }
 
 Return<bool> ServerManagement::restart_container() {
+    string raw_user_input;
     int user_input;
     string final_url = server_base_url + "/api/client/restart";
 
@@ -292,7 +293,13 @@ Return<bool> ServerManagement::restart_container() {
 
     // Let user input number
     KDRPrinter::print_normal("Input number of container instance to restart: ", false);
-    cin >> user_input;
+    getline(cin, raw_user_input);
+    try {
+        user_input = stoi(raw_user_input);
+    } catch (const exception& expn) {
+        return Return<bool>(false, "Invalid Range Input");
+    }
+
     if (user_input < 1 || user_input > container_information.size()) {
         return Return<bool>(false, "Invalid Range Input");
     }
