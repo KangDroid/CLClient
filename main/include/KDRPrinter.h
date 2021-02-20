@@ -37,6 +37,8 @@ public:
 
     static void print_normal(vector<string> normal_message, bool newline = true);
 
+    static void press_enter();
+
     static void terminal_echo(const bool &disable_echo);
 };
 

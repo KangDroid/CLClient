@@ -11,12 +11,6 @@
 using namespace std;
 using namespace boost::program_options;
 
-void press_enter() {
-    KDRPrinter::print_normal("Press enter key to continue...", false);
-    string random_value;
-    getline(cin, random_value);
-}
-
 int print_menu(ServerManagement &server_management) {
     system("clear");
     string input_tmp;
@@ -137,7 +131,7 @@ int main(int argc, char **argv) {
     do {
         menu_selection = print_menu(server_management);
         if (menu_selection != 0) {
-            press_enter();
+            KDRPrinter::press_enter();
         }
     } while (menu_selection != 0);
     return 0;

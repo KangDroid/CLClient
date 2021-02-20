@@ -75,3 +75,9 @@ void KDRPrinter::print_normal(vector<string> normal_message, bool newline) {
         }
     }
 }
+
+void KDRPrinter::press_enter() {
+    KDRPrinter::print_normal("Press enter key to continue...", false);
+    string random_value;
+    getline(cin, random_value);
+}
