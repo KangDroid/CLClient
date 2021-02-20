@@ -6,11 +6,13 @@
 #define CLCLIENT_SERVERMANAGEMENT_H
 
 #include <iostream>
+#include <vector>
 #include <cpprest/http_client.h>
 #include <cpprest/json.h>
 
 #include "KDRPrinter.h"
 #include "Return.h"
+#include "ContainerInformation.h"
 
 using namespace std;
 using namespace web;
@@ -20,6 +22,8 @@ using namespace web::http::client;
 class ServerManagement {
 private:
     string *user_token;
+
+    vector<ContainerInformation> container_information;
 
     Return<http_client *> create_client(string &url, int timeout = 5);
 

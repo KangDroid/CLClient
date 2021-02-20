@@ -262,11 +262,14 @@ Return<bool> ServerManagement::show_container() {
         if (!response_main[i]["errorMessage"].as_string().empty()) {
             return Return<bool>(false, response_main[i]["errorMessage"].as_string());
         }
+        ContainerInformation this_container(response_main[i]["dockerId"].as_string(), response_main[i]["computeRegion"].as_string());
 
         KDRPrinter::print_normal("Container information for " + response_main[i]["userName"].as_string());
-        KDRPrinter::print_normal("Container ID: " + response_main[i]["dockerId"].as_string());
-        KDRPrinter::print_normal("Container Compute Region: " + response_main[i]["computeRegion"].as_string());
+        KDRPrinter::print_normal("Container ID: " + this_container.container_id);
+        KDRPrinter::print_normal("Container Compute Region: " + this_container.compute_region);
         KDRPrinter::print_normal("");
+
+        container_information.push_back(this_container);
     }
 
     delete client;
