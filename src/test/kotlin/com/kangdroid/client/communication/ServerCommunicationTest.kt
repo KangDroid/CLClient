@@ -67,6 +67,30 @@ class ServerCommunicationTest {
     }
 
     @Test
+    fun checkingServerAliveFailingWell() {
+        // Backup Original Server Communication
+        clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
+
+        mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
+            .ignoreExpectOrder(true).build()
+
+        mockServer.expect(
+            ExpectedCount.min(1),
+            MockRestRequestMatchers.requestTo("$serverAddress/api/client/alive")
+        )
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+            .andRespond(
+                MockRestResponseCreators.withStatus(HttpStatus.FORBIDDEN)
+            )
+
+        assertThat(serverCommunication.isServerAlive()).isEqualTo(false)
+        mockServer.verify()
+
+        // Restore RequestFactory
+        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
+    }
+
+    @Test
     fun loginIsSuccessful() {
         // Backup Original Server Communication
         clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
