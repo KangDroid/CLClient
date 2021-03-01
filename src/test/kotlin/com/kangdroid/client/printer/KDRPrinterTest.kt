@@ -1,6 +1,6 @@
 package com.kangdroid.client.printer
 
-import org.junit.jupiter.api.Test
+import org.junit.Test
 
 // Those test class is NOT to check whether response value/return value is correct.
 class KDRPrinterTest {
