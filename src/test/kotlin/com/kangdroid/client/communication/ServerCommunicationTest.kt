@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
+import org.springframework.http.client.ClientHttpRequestFactory
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.client.ExpectedCount
 import org.springframework.test.web.client.MockRestServiceServer
@@ -23,14 +24,18 @@ class ServerCommunicationTest {
     // Mock Server
     private val serverAddress: String = "http://localhost:8080"
     private lateinit var mockServer: MockRestServiceServer
+    private lateinit var clientHttpRequestFactory: ClientHttpRequestFactory
 
-    @Before
-    fun initMockServer() {
+    @Test
+    fun checkingServerAliveWorkingWell() {
+        // Backup Original Server Communication
+        clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
+
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
 
         mockServer.expect(
-            ExpectedCount.manyTimes(),
+            ExpectedCount.min(1),
             MockRestRequestMatchers.requestTo("$serverAddress/api/client/alive")
         )
             .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
@@ -40,10 +45,11 @@ class ServerCommunicationTest {
                     MediaType.TEXT_PLAIN
                 )
             )
-    }
 
-    @Test
-    fun checkingServerAliveWorkingWell() {
         assertThat(serverCommunication.isServerAlive()).isEqualTo(true)
+        mockServer.verify()
+
+        // Restore RequestFactory
+        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
     }
 }
