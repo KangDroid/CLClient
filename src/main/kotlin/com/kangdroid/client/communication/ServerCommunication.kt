@@ -65,6 +65,9 @@ class ServerCommunication {
         } catch (httpClientErrorException: HttpClientErrorException) {
             handleServerClientError(httpClientErrorException)
             return false
+        } catch (httpServerErrorException: HttpServerErrorException) {
+            handleServerClientError(httpServerErrorException)
+            return false
         }
 
         // Get Body
