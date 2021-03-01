@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.kangdroid.client.communication.dto.ErrorResponse
 import com.kangdroid.client.communication.dto.UserLoginRequestDto
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,11 +40,20 @@ class ServerCommunicationTest {
     private lateinit var mockServer: MockRestServiceServer
     private lateinit var clientHttpRequestFactory: ClientHttpRequestFactory
 
-    @Test
-    fun checkingServerAliveWorkingWell() {
+    @Before
+    fun backupRequestFactory() {
         // Backup Original Server Communication
         clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
+    }
 
+    @After
+    fun restoreRequestFactory() {
+        // Restore RequestFactory
+        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
+    }
+
+    @Test
+    fun checkingServerAliveWorkingWell() {
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
 
@@ -61,16 +71,10 @@ class ServerCommunicationTest {
 
         assertThat(serverCommunication.isServerAlive()).isEqualTo(true)
         mockServer.verify()
-
-        // Restore RequestFactory
-        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
     }
 
     @Test
     fun checkingServerAliveFailingWell() {
-        // Backup Original Server Communication
-        clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
-
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
 
@@ -85,16 +89,10 @@ class ServerCommunicationTest {
 
         assertThat(serverCommunication.isServerAlive()).isEqualTo(false)
         mockServer.verify()
-
-        // Restore RequestFactory
-        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
     }
 
     @Test
     fun loginIsSuccessful() {
-        // Backup Original Server Communication
-        clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -113,16 +111,10 @@ class ServerCommunicationTest {
         // Successful Test
         assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(true)
         mockServer.verify()
-
-        // Restore RequestFactory
-        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
     }
 
     @Test
     fun isLoginReturnsFalseSuccessCodeWrongBody() {
-        // Backup Original Server Communication
-        clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -141,28 +133,16 @@ class ServerCommunicationTest {
         // Successful Test
         assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
         mockServer.verify()
-
-        // Restore RequestFactory
-        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
     }
 
     @Test
     fun isLoginReturnsFalseFailedServer() {
-        // Backup Original Server Communication
-        clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
-
         // Without mock server
         assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
-
-        // Restore RequestFactory
-        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
     }
 
     @Test
     fun isLoginReturnsFalseWithoutBody() {
-        // Backup Original Server Communication
-        clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -181,16 +161,10 @@ class ServerCommunicationTest {
         // Failure Test
         assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
         mockServer.verify()
-
-        // Restore RequestFactory
-        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
     }
 
     @Test
     fun isLoginReturnsFalseWithWrongID() {
-        // Backup Original Server Communication
-        clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -215,16 +189,10 @@ class ServerCommunicationTest {
         // Failure Test
         assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
         mockServer.verify()
-
-        // Restore RequestFactory
-        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
     }
 
     @Test
     fun isLoginReturnsFalseWithWrongPassword() {
-        // Backup Original Server Communication
-        clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -249,16 +217,10 @@ class ServerCommunicationTest {
         // Failure Test
         assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
         mockServer.verify()
-
-        // Restore RequestFactory
-        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
     }
 
     @Test
     fun isLoginReturnsFalseInternalUnknownError() {
-        // Backup Original Server Communication
-        clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -277,8 +239,5 @@ class ServerCommunicationTest {
         // Failure Test
         assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
         mockServer.verify()
-
-        // Restore RequestFactory
-        serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
     }
 }
