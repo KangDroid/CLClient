@@ -5,6 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	kotlin("jvm") version "1.4.30"
 	kotlin("plugin.spring") version "1.4.30"
+	id("jacoco")
 }
 
 group = "com.kangdroid.client"
@@ -13,6 +14,50 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
 	mavenCentral()
+}
+
+jacoco {
+	toolVersion = "0.8.6"
+}
+
+tasks.jacocoTestReport {
+	reports {
+		html.isEnabled = true
+		xml.isEnabled = false
+		csv.isEnabled = true
+	}
+	finalizedBy("jacocoTestCoverageVerification")
+}
+
+tasks.jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			enabled = true
+			element = "CLASS"
+
+			limit {
+				counter = "BRANCH"
+				value = "COVEREDRATIO"
+				minimum = "0.90".toBigDecimal()
+			}
+
+			limit {
+				counter = "LINE"
+				value = "COVEREDRATIO"
+				minimum = "0.80".toBigDecimal()
+			}
+
+			limit {
+				counter = "LINE"
+				value = "TOTALCOUNT"
+				maximum = "200".toBigDecimal()
+			}
+
+			excludes = listOf(
+				"com.kangdroid.client.ClClientApplicationKt"
+			)
+		}
+	}
 }
 
 dependencies {
@@ -32,4 +77,5 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	finalizedBy("jacocoTestReport")
 }
