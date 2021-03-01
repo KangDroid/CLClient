@@ -32,10 +32,9 @@ class ServerCommunication {
 
     fun login(userLoginRequestDto: UserLoginRequestDto): Boolean {
         val finalAddress: String = "$serverAddress/api/client/login"
-        lateinit var loginResponseEntity: ResponseEntity<String>
 
         // Communicate with server
-        loginResponseEntity = try {
+        val loginResponseEntity: ResponseEntity<String> = try {
             restTemplate.exchange(finalAddress, HttpMethod.POST, HttpEntity(userLoginRequestDto))
         } catch (resourceAccessException: ResourceAccessException) {
             KDRPrinter.printError("Error communicating with server. Check server address and internet connection.")
