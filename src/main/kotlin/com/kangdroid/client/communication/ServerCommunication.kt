@@ -30,6 +30,23 @@ class ServerCommunication {
         return responseEntity.statusCode.is2xxSuccessful
     }
 
+    fun handleClientError(httpClientErrorException: HttpClientErrorException) {
+        // With 4xx Codes!
+        val body: String = httpClientErrorException.responseBodyAsString
+
+        // meaning error!
+        val errorResponse: ErrorResponse = runCatching {
+            objectMapper.readValue(body, ErrorResponse::class.java)
+        }.onFailure { innerIt ->
+            // If body type is NOT matching with errorResponse
+            KDRPrinter.printError("Exception Occurred!")
+            KDRPrinter.printError(innerIt.message ?: "No message available")
+        }.getOrNull() ?: return
+
+        KDRPrinter.printError("Server responded with: ${errorResponse.statusCode} - ${errorResponse.statusMessage}")
+        KDRPrinter.printError("Message is: ${errorResponse.errorMessage}")
+    }
+
     fun login(userLoginRequestDto: UserLoginRequestDto): Boolean {
         val finalAddress: String = "$serverAddress/api/client/login"
 
@@ -40,20 +57,7 @@ class ServerCommunication {
             KDRPrinter.printError("Error communicating with server. Check server address and internet connection.")
             return false
         } catch (httpClientErrorException: HttpClientErrorException) {
-            // With 4xx Codes!
-            val body: String = httpClientErrorException.responseBodyAsString
-
-            // meaning error!
-            val errorResponse: ErrorResponse = runCatching {
-                objectMapper.readValue(body, ErrorResponse::class.java)
-            }.onFailure { innerIt ->
-                // If body type is NOT matching with errorResponse
-                KDRPrinter.printError("Exception Occurred!")
-                KDRPrinter.printError(innerIt.message ?: "No message available")
-            }.getOrNull() ?: return false
-
-            KDRPrinter.printError("Server responded with: ${errorResponse.statusCode} - ${errorResponse.statusMessage}")
-            KDRPrinter.printError("Message is: ${errorResponse.errorMessage}")
+            handleClientError(httpClientErrorException)
             return false
         }
 
