@@ -73,6 +73,7 @@ class ServerCommunication {
 
         // Finally use token
         token = userLoginResponseDto.token
+        KDRPrinter.printNormal("Login Succeed!")
 
         return true
     }
