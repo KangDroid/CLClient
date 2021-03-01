@@ -7,12 +7,12 @@ import org.springframework.web.client.getForEntity
 
 @Component
 class ServerCommunication {
-    private val restTemplate: RestTemplate = RestTemplate()
+    val restTemplate: RestTemplate = RestTemplate()
     private val serverAddress: String = "http://localhost:8080"
 
     fun isServerAlive(): Boolean {
         val finalAddress: String = "$serverAddress/api/client/alive"
-        lateinit var responseEntity: ResponseEntity<Boolean>
+        lateinit var responseEntity: ResponseEntity<String>
         runCatching {
             responseEntity = restTemplate.getForEntity(finalAddress)
         }.onFailure {
