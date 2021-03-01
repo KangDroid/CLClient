@@ -6,7 +6,7 @@ object KDRPrinter {
     private val greenColor: String = "\u001B[32m"
 
     fun printError(message: String) {
-        print(redColor)
+        print("${redColor}[Error]: ")
         print(message)
         println(resetColor)
     }
