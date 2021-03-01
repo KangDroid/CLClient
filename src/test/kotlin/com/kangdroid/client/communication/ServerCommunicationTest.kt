@@ -3,6 +3,7 @@ package com.kangdroid.client.communication
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.kangdroid.client.communication.dto.ErrorResponse
 import com.kangdroid.client.communication.dto.UserLoginRequestDto
+import com.kangdroid.client.communication.dto.UserRegisterResponseDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -238,6 +239,138 @@ class ServerCommunicationTest {
 
         // Failure Test
         assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
+        mockServer.verify()
+    }
+
+    @Test
+    fun registerIsSuccessful() {
+        // Setup mockServer
+        mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
+            .ignoreExpectOrder(true).build()
+        mockServer.expect(
+            ExpectedCount.manyTimes(),
+            MockRestRequestMatchers.requestTo("$serverAddress/api/client/register")
+        )
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+            .andRespond(
+                MockRestResponseCreators.withStatus(HttpStatus.OK)
+                    .body(
+                        objectMapper.writeValueAsString(
+                            UserRegisterResponseDto(
+                                registeredId = userLoginRequestDto.userName
+                            )
+                        )
+                    )
+            )
+
+        // Successful Test
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(true)
+        mockServer.verify()
+    }
+
+    @Test
+    fun isRegisterReturnsFalseSuccessCodeWrongBody() {
+        // Setup mockServer
+        mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
+            .ignoreExpectOrder(true).build()
+        mockServer.expect(
+            ExpectedCount.manyTimes(),
+            MockRestRequestMatchers.requestTo("$serverAddress/api/client/register")
+        )
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+            .andRespond(
+                MockRestResponseCreators.withStatus(HttpStatus.OK)
+                    .body(
+                        "Wrong Body!"
+                    )
+            )
+
+        // Successful Test
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(false)
+        mockServer.verify()
+    }
+
+    @Test
+    fun isRegisterReturnsFalseFailedServer() {
+        // Without mock server
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(false)
+    }
+
+    @Test
+    fun isRegisterReturnsFalseWithoutBody() {
+        // Setup mockServer
+        mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
+            .ignoreExpectOrder(true).build()
+        mockServer.expect(
+            ExpectedCount.manyTimes(),
+            MockRestRequestMatchers.requestTo("$serverAddress/api/client/register")
+        )
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+            .andRespond(
+                MockRestResponseCreators.withSuccess(
+                    "",
+                    MediaType.TEXT_PLAIN
+                )
+            )
+
+        // Failure Test
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(false)
+        mockServer.verify()
+    }
+
+    @Test
+    fun isRegisterReturnsFalseWithDuplicatedID() {
+        // Setup mockServer
+        mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
+            .ignoreExpectOrder(true).build()
+        mockServer.expect(
+            ExpectedCount.manyTimes(),
+            MockRestRequestMatchers.requestTo("$serverAddress/api/client/register")
+        )
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+            .andRespond(
+                MockRestResponseCreators.withStatus(HttpStatus.CONFLICT)
+                    .body(
+                        objectMapper.writeValueAsString(
+                            ErrorResponse(
+                                errorMessage = "testing_error",
+                                statusCode = "409",
+                                statusMessage = "CONFLICT"
+                            )
+                        )
+                    )
+            )
+
+        // Failure Test
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(false)
+        mockServer.verify()
+    }
+
+    @Test
+    fun isRegisterReturnsFalseInternalUnknownError() {
+        // Setup mockServer
+        mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
+            .ignoreExpectOrder(true).build()
+        mockServer.expect(
+            ExpectedCount.manyTimes(),
+            MockRestRequestMatchers.requestTo("$serverAddress/api/client/register")
+        )
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+            .andRespond(
+                MockRestResponseCreators.withStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(
+                        objectMapper.writeValueAsString(
+                            ErrorResponse(
+                                errorMessage = "Internal Unknown!",
+                                statusCode = "5XX",
+                                statusMessage = "INTERNAL"
+                            )
+                        )
+                    )
+            )
+
+        // Failure Test
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(false)
         mockServer.verify()
     }
 }

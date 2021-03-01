@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.kangdroid.client.communication.dto.ErrorResponse
 import com.kangdroid.client.communication.dto.UserLoginRequestDto
 import com.kangdroid.client.communication.dto.UserLoginResponseDto
+import com.kangdroid.client.communication.dto.UserRegisterResponseDto
 import com.kangdroid.client.printer.KDRPrinter
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -47,8 +48,12 @@ class ServerCommunication {
         KDRPrinter.printError("Message is: ${errorResponse.errorMessage}")
     }
 
-    fun login(userLoginRequestDto: UserLoginRequestDto): Boolean {
-        val finalAddress: String = "$serverAddress/api/client/login"
+    fun login(userLoginRequestDto: UserLoginRequestDto, isLogin: Boolean = true): Boolean {
+        val finalAddress: String = if (isLogin) {
+            "$serverAddress/api/client/login"
+        } else {
+            "$serverAddress/api/client/register"
+        }
 
         // Communicate with server
         val loginResponseEntity: ResponseEntity<String> = try {
@@ -63,21 +68,34 @@ class ServerCommunication {
 
         // Get Body
         val body: String = loginResponseEntity.body ?: run {
-            KDRPrinter.printError("Login: Cannot get body part from server.")
+            KDRPrinter.printError("Cannot get body part from server.")
             return false
         }
 
-        // Object string to UserLoginResponseDto
-        val userLoginResponseDto: UserLoginResponseDto = runCatching {
-            objectMapper.readValue(body, UserLoginResponseDto::class.java)
-        }.onFailure {
-            // If Body type is NOT matching
-            KDRPrinter.printError("Server responded with correct code, but it did not sent body!")
-        }.getOrNull() ?: return false
+        if (isLogin) {
+            // Object string to UserLoginResponseDto
+            val userLoginResponseDto: UserLoginResponseDto = runCatching {
+                objectMapper.readValue(body, UserLoginResponseDto::class.java)
+            }.onFailure {
+                // If Body type is NOT matching
+                KDRPrinter.printError("Server responded with correct code, but it did not sent body!")
+            }.getOrNull() ?: return false
 
-        // Finally use token
-        token = userLoginResponseDto.token
-        KDRPrinter.printNormal("Login Succeed!")
+            // Finally use token
+            token = userLoginResponseDto.token
+            KDRPrinter.printNormal("Login Succeed!")
+        } else {
+            val userRegisterResponseDto: UserRegisterResponseDto = runCatching {
+                objectMapper.readValue(body, UserRegisterResponseDto::class.java)
+            }.onFailure {
+                // If Body type is NOT matching
+                KDRPrinter.printError("Server responded with correct code, but it did not sent body!")
+            }.getOrNull() ?: return false
+
+            KDRPrinter.printNormal("Successfully registered user: ${userRegisterResponseDto.registeredId}")
+        }
+
+
 
         return true
     }
