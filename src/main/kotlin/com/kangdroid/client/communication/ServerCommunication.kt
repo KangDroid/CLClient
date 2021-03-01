@@ -31,9 +31,10 @@ class ServerCommunication {
         return responseEntity.statusCode.is2xxSuccessful
     }
 
-    fun handleClientError(httpClientErrorException: HttpClientErrorException) {
+    // Range from 4xx to 5xx
+    fun handleServerClientError(httpStatusCodeException: HttpStatusCodeException) {
         // With 4xx Codes!
-        val body: String = httpClientErrorException.responseBodyAsString
+        val body: String = httpStatusCodeException.responseBodyAsString
 
         // meaning error!
         val errorResponse: ErrorResponse = runCatching {
@@ -62,7 +63,7 @@ class ServerCommunication {
             KDRPrinter.printError("Error communicating with server. Check server address and internet connection.")
             return false
         } catch (httpClientErrorException: HttpClientErrorException) {
-            handleClientError(httpClientErrorException)
+            handleServerClientError(httpClientErrorException)
             return false
         }
 
