@@ -1,12 +1,11 @@
 package com.kangdroid.client.communication
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.kangdroid.client.communication.dto.ErrorResponse
-import com.kangdroid.client.communication.dto.UserLoginRequestDto
-import com.kangdroid.client.communication.dto.UserLoginResponseDto
-import com.kangdroid.client.communication.dto.UserRegisterResponseDto
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.kangdroid.client.communication.dto.*
 import com.kangdroid.client.printer.KDRPrinter
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
@@ -97,6 +96,56 @@ class ServerCommunication {
             }.getOrNull() ?: return false
 
             KDRPrinter.printNormal("Successfully registered user: ${userRegisterResponseDto.registeredId}")
+        }
+        return true
+    }
+
+    fun showRegion(): Boolean {
+        val finalUrl: String = "$serverAddress/api/client/node"
+        if (token == null) {
+            KDRPrinter.printError("User did not logged into server!")
+            KDRPrinter.printError("Please login first.")
+            return false
+        }
+
+        // Request!
+        val responseEntity: ResponseEntity<String> = try {
+            val httpHeaders: HttpHeaders = HttpHeaders().apply {
+                add("X-AUTH-TOKEN", token)
+            }
+            restTemplate.exchange(finalUrl, HttpMethod.GET, HttpEntity<Void>(httpHeaders))
+        } catch (resourceAccessException: ResourceAccessException) {
+            KDRPrinter.printError("Error communicating with server. Check server address and internet connection.")
+            return false
+        } catch (httpClientErrorException: HttpClientErrorException) {
+            handleServerClientError(httpClientErrorException)
+            return false
+        } catch (httpServerErrorException: HttpServerErrorException) {
+            handleServerClientError(httpServerErrorException)
+            return false
+        }
+
+        val body: String = responseEntity.body ?: run {
+            KDRPrinter.printError("Cannot get body part from server.")
+            return false
+        }
+
+        // Get List of Values
+        val listNode: Array<NodeInformationResponseDto> = runCatching {
+            objectMapper.readValue<Array<NodeInformationResponseDto>>(body)
+        }.onFailure {
+            // If Body type is NOT matching
+            KDRPrinter.printError("Server responded with correct code, but it did not sent body!")
+        }.getOrNull() ?: return false
+
+        if (listNode.isEmpty()) {
+            KDRPrinter.printNormal("There is NO registered node on server!")
+        } else {
+            KDRPrinter.printNormal("Total Nodes: ${listNode.size}")
+            for (node in listNode) {
+                KDRPrinter.printNormal("Region: ${node.regionName}")
+                KDRPrinter.printNormal("Load: ${node.nodeLoadPercentage}\n")
+            }
         }
         return true
     }
