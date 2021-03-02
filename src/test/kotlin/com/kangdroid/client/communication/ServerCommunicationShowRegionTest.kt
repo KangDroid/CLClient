@@ -38,15 +38,21 @@ class ServerCommunicationShowRegionTest {
     private lateinit var clientHttpRequestFactory: ClientHttpRequestFactory
 
     @Before
-    fun backupRequestFactory() {
+    fun initTest() {
         // Backup Original Server Communication
         clientHttpRequestFactory = serverCommunication.restTemplate.requestFactory
+
+        // Setup token
+        ReflectionTestUtils.setField(serverCommunication, "token", "TEST_TOKEN")
     }
 
     @After
-    fun restoreRequestFactory() {
+    fun deInitTest() {
         // Restore RequestFactory
         serverCommunication.restTemplate.requestFactory = clientHttpRequestFactory
+
+        // De-Init Token
+        ReflectionTestUtils.setField(serverCommunication, "token", null)
     }
 
     /**
@@ -55,9 +61,6 @@ class ServerCommunicationShowRegionTest {
      */
     @Test
     fun is_showingRegion_works_normally() {
-        // Setup token
-        ReflectionTestUtils.setField(serverCommunication, "token", "TEST_TOKEN")
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -83,22 +86,19 @@ class ServerCommunicationShowRegionTest {
         // Failure Test
         Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(true)
         mockServer.verify()
-
-        // De-Init Token
-        ReflectionTestUtils.setField(serverCommunication, "token", null)
     }
 
     @Test
     fun is_returning_false_token_null() {
+        // Cleanup Token first
+        ReflectionTestUtils.setField(serverCommunication, "token", null)
+
         // Without setting fields
         Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
     }
 
     @Test
     fun is_returning_false_internal_server_error() {
-        // Setup token
-        ReflectionTestUtils.setField(serverCommunication, "token", "TEST_TOKEN")
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -123,16 +123,10 @@ class ServerCommunicationShowRegionTest {
         // Failure Test
         Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
         mockServer.verify()
-
-        // De-Init Token
-        ReflectionTestUtils.setField(serverCommunication, "token", null)
     }
 
     @Test
     fun is_returning_false_forbidden() {
-        // Setup token
-        ReflectionTestUtils.setField(serverCommunication, "token", "TEST_TOKEN")
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -157,28 +151,16 @@ class ServerCommunicationShowRegionTest {
         // Failure Test
         Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
         mockServer.verify()
-
-        // De-Init Token
-        ReflectionTestUtils.setField(serverCommunication, "token", null)
     }
 
     @Test
     fun is_returning_false_without_server() {
-        // Setup token
-        ReflectionTestUtils.setField(serverCommunication, "token", "TEST_TOKEN")
-
         // Failure Test
         Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
-
-        // De-Init Token
-        ReflectionTestUtils.setField(serverCommunication, "token", null)
     }
 
     @Test
     fun is_returning_false_ok_but_no_body() {
-        // Setup token
-        ReflectionTestUtils.setField(serverCommunication, "token", "TEST_TOKEN")
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -197,16 +179,10 @@ class ServerCommunicationShowRegionTest {
         // Failure Test
         Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
         mockServer.verify()
-
-        // De-Init Token
-        ReflectionTestUtils.setField(serverCommunication, "token", null)
     }
 
     @Test
     fun is_returning_false_ok_but_crazy_body() {
-        // Setup token
-        ReflectionTestUtils.setField(serverCommunication, "token", "TEST_TOKEN")
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -225,16 +201,10 @@ class ServerCommunicationShowRegionTest {
         // Failure Test
         Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
         mockServer.verify()
-
-        // De-Init Token
-        ReflectionTestUtils.setField(serverCommunication, "token", null)
     }
 
     @Test
     fun is_returning_true_empty_node() {
-        // Setup token
-        ReflectionTestUtils.setField(serverCommunication, "token", "TEST_TOKEN")
-
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -255,8 +225,5 @@ class ServerCommunicationShowRegionTest {
         // Failure Test
         Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(true)
         mockServer.verify()
-
-        // De-Init Token
-        ReflectionTestUtils.setField(serverCommunication, "token", null)
     }
 }
