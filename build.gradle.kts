@@ -55,7 +55,8 @@ tasks.jacocoTestCoverageVerification {
 
             excludes = listOf(
                 "com.kangdroid.client.ClClientApplicationKt",
-                "com.kangdroid.client.ClClientApplication"
+                "com.kangdroid.client.ClClientApplication",
+                "com.kangdroid.client.communication.ServerCommunication.*"
             )
         }
     }
