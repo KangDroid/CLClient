@@ -48,6 +48,21 @@ class ServerCommunication {
         KDRPrinter.printError("Message is: ${errorResponse.errorMessage}")
     }
 
+    fun getResponseEntityInStringFormat(toExecute: () -> ResponseEntity<String>): ResponseEntity<String>? {
+        return try {
+            toExecute()
+        } catch (resourceAccessException: ResourceAccessException) {
+            KDRPrinter.printError("Error communicating with server. Check server address and internet connection.")
+            return null
+        } catch (httpClientErrorException: HttpClientErrorException) {
+            handleServerClientError(httpClientErrorException)
+            return null
+        } catch (httpServerErrorException: HttpServerErrorException) {
+            handleServerClientError(httpServerErrorException)
+            return null
+        }
+    }
+
     fun login(userLoginRequestDto: UserLoginRequestDto, isLogin: Boolean = true): Boolean {
         val finalAddress: String = if (isLogin) {
             "$serverAddress/api/client/login"
@@ -56,18 +71,9 @@ class ServerCommunication {
         }
 
         // Communicate with server
-        val loginResponseEntity: ResponseEntity<String> = try {
+        val loginResponseEntity: ResponseEntity<String> = getResponseEntityInStringFormat {
             restTemplate.exchange(finalAddress, HttpMethod.POST, HttpEntity(userLoginRequestDto))
-        } catch (resourceAccessException: ResourceAccessException) {
-            KDRPrinter.printError("Error communicating with server. Check server address and internet connection.")
-            return false
-        } catch (httpClientErrorException: HttpClientErrorException) {
-            handleServerClientError(httpClientErrorException)
-            return false
-        } catch (httpServerErrorException: HttpServerErrorException) {
-            handleServerClientError(httpServerErrorException)
-            return false
-        }
+        } ?: return false
 
         // Get Body
         val body: String = loginResponseEntity.body ?: run {
@@ -109,21 +115,12 @@ class ServerCommunication {
         }
 
         // Request!
-        val responseEntity: ResponseEntity<String> = try {
+        val responseEntity: ResponseEntity<String> = getResponseEntityInStringFormat {
             val httpHeaders: HttpHeaders = HttpHeaders().apply {
                 add("X-AUTH-TOKEN", token)
             }
             restTemplate.exchange(finalUrl, HttpMethod.GET, HttpEntity<Void>(httpHeaders))
-        } catch (resourceAccessException: ResourceAccessException) {
-            KDRPrinter.printError("Error communicating with server. Check server address and internet connection.")
-            return false
-        } catch (httpClientErrorException: HttpClientErrorException) {
-            handleServerClientError(httpClientErrorException)
-            return false
-        } catch (httpServerErrorException: HttpServerErrorException) {
-            handleServerClientError(httpServerErrorException)
-            return false
-        }
+        } ?: return false
 
         val body: String = responseEntity.body ?: run {
             KDRPrinter.printError("Cannot get body part from server.")
