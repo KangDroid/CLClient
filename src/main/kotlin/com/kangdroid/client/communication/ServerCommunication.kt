@@ -98,9 +98,6 @@ class ServerCommunication {
 
             KDRPrinter.printNormal("Successfully registered user: ${userRegisterResponseDto.registeredId}")
         }
-
-
-
         return true
     }
 }
