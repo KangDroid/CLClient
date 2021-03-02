@@ -1,6 +1,7 @@
 package com.kangdroid.client.communication
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.kangdroid.client.communication.dto.*
 import com.kangdroid.client.printer.KDRPrinter
@@ -63,6 +64,15 @@ class ServerCommunication {
         }
     }
 
+    private inline fun <reified T> getObjectValues(body: String): T? {
+        return runCatching {
+            objectMapper.readValue<T>(body)
+        }.onFailure {
+            // If Body type is NOT matching
+            KDRPrinter.printError("Server responded with correct code, but it did not sent body!")
+        }.getOrNull()
+    }
+
     fun login(userLoginRequestDto: UserLoginRequestDto, isLogin: Boolean = true): Boolean {
         val finalAddress: String = if (isLogin) {
             "$serverAddress/api/client/login"
@@ -83,24 +93,13 @@ class ServerCommunication {
 
         if (isLogin) {
             // Object string to UserLoginResponseDto
-            val userLoginResponseDto: UserLoginResponseDto = runCatching {
-                objectMapper.readValue(body, UserLoginResponseDto::class.java)
-            }.onFailure {
-                // If Body type is NOT matching
-                KDRPrinter.printError("Server responded with correct code, but it did not sent body!")
-            }.getOrNull() ?: return false
+            val userLoginResponseDto: UserLoginResponseDto = getObjectValues<UserLoginResponseDto>(body) ?: return false
 
             // Finally use token
             token = userLoginResponseDto.token
             KDRPrinter.printNormal("Login Succeed!")
         } else {
-            val userRegisterResponseDto: UserRegisterResponseDto = runCatching {
-                objectMapper.readValue(body, UserRegisterResponseDto::class.java)
-            }.onFailure {
-                // If Body type is NOT matching
-                KDRPrinter.printError("Server responded with correct code, but it did not sent body!")
-            }.getOrNull() ?: return false
-
+            val userRegisterResponseDto: UserRegisterResponseDto = getObjectValues<UserRegisterResponseDto>(body) ?: return false
             KDRPrinter.printNormal("Successfully registered user: ${userRegisterResponseDto.registeredId}")
         }
         return true
@@ -128,12 +127,7 @@ class ServerCommunication {
         }
 
         // Get List of Values
-        val listNode: Array<NodeInformationResponseDto> = runCatching {
-            objectMapper.readValue<Array<NodeInformationResponseDto>>(body)
-        }.onFailure {
-            // If Body type is NOT matching
-            KDRPrinter.printError("Server responded with correct code, but it did not sent body!")
-        }.getOrNull() ?: return false
+        val listNode: Array<NodeInformationResponseDto> = getObjectValues<Array<NodeInformationResponseDto>>(body) ?: return false
 
         if (listNode.isEmpty()) {
             KDRPrinter.printNormal("There is NO registered node on server!")
