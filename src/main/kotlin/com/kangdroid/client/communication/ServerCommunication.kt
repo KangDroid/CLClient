@@ -31,6 +31,16 @@ class ServerCommunication {
         return responseEntity.statusCode.is2xxSuccessful
     }
 
+    fun checkToken(): Boolean {
+        return if (token == null) {
+            KDRPrinter.printError("User did not logged into server!")
+            KDRPrinter.printError("Please login first.")
+            false
+        } else {
+            true
+        }
+    }
+
     // Range from 4xx to 5xx
     fun handleServerClientError(httpStatusCodeException: HttpStatusCodeException) {
         // With 4xx Codes!
@@ -107,11 +117,7 @@ class ServerCommunication {
 
     fun showRegion(): Boolean {
         val finalUrl: String = "$serverAddress/api/client/node"
-        if (token == null) {
-            KDRPrinter.printError("User did not logged into server!")
-            KDRPrinter.printError("Please login first.")
-            return false
-        }
+        if (!checkToken()) return false
 
         // Request!
         val responseEntity: ResponseEntity<String> = getResponseEntityInStringFormat {
