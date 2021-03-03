@@ -146,4 +146,39 @@ class ServerCommunication {
         }
         return true
     }
+
+    fun showClientContainer(): Boolean {
+        val clientContainerShowUrl: String = "$serverAddress/api/client/container"
+        if (!checkToken()) return false
+
+        // Request!
+        val responseEntity: ResponseEntity<String> = getResponseEntityInStringFormat {
+            val httpHeaders: HttpHeaders = HttpHeaders().apply {
+                add("X-AUTH-TOKEN", token)
+            }
+            restTemplate.exchange(clientContainerShowUrl, HttpMethod.GET, HttpEntity<Void>(httpHeaders))
+        } ?: return false
+
+        // get Response Body
+        val responseBody: String = responseEntity.body ?: run {
+            KDRPrinter.printError("Cannot get body part from server.")
+            return false
+        }
+
+        // Parse as Objects
+        val userImageResponseList: Array<UserImageListResponseDto> =
+            getObjectValues<Array<UserImageListResponseDto>>(responseBody) ?: return false
+
+        if (userImageResponseList.isEmpty()) {
+            KDRPrinter.printNormal("There is NO created/registered container on server!")
+        } else {
+            KDRPrinter.printNormal("Container information for: ${userImageResponseList[0].userName}\n")
+            KDRPrinter.printNormal("Total Containers: ${userImageResponseList.size}")
+            for (userImageResponse in userImageResponseList) {
+                KDRPrinter.printNormal("Docker ID: ${userImageResponse.dockerId}")
+                KDRPrinter.printNormal("Compute Region: ${userImageResponse.computeRegion}\n")
+            }
+        }
+        return true
+    }
 }
