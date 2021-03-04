@@ -6,6 +6,7 @@ package com.kangdroid.client.communication
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.kangdroid.client.communication.dto.ErrorResponse
 import com.kangdroid.client.communication.dto.NodeInformationResponseDto
+import com.kangdroid.client.error.FunctionResponse
 import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
@@ -84,21 +85,21 @@ class ServerCommunicationShowRegionTest {
             )
 
         // Failure Test
-        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(true)
+        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(FunctionResponse.SUCCESS)
         mockServer.verify()
     }
 
     @Test
-    fun is_returning_false_token_null() {
+    fun is_returning_NO_TOKEN_when_token_null() {
         // Cleanup Token first
         ReflectionTestUtils.setField(serverCommunication, "token", null)
 
         // Without setting fields
-        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
+        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(FunctionResponse.CLIENT_NO_TOKEN)
     }
 
     @Test
-    fun is_returning_false_internal_server_error() {
+    fun is_returning_4xx_5xx_internal_server_error() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -121,12 +122,12 @@ class ServerCommunicationShowRegionTest {
             )
 
         // Failure Test
-        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
+        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
         mockServer.verify()
     }
 
     @Test
-    fun is_returning_false_forbidden() {
+    fun is_returning_4xx_5xx_forbidden() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -149,18 +150,18 @@ class ServerCommunicationShowRegionTest {
             )
 
         // Failure Test
-        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
+        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
         mockServer.verify()
     }
 
     @Test
-    fun is_returning_false_without_server() {
+    fun is_returning_4xx_5xx_without_server() {
         // Failure Test
-        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
+        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
     }
 
     @Test
-    fun is_returning_false_ok_but_no_body() {
+    fun is_returning_SERVER_RESPONSE_OK_BUT_NO_BODY_ok_but_no_body() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -177,12 +178,12 @@ class ServerCommunicationShowRegionTest {
             )
 
         // Failure Test
-        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
+        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(FunctionResponse.SERVER_RESPONSE_OK_BUT_NO_BODY)
         mockServer.verify()
     }
 
     @Test
-    fun is_returning_false_ok_but_crazy_body() {
+    fun is_returning_SERVER_RESPONSE_OK_BUT_WRONG_FORMAT_ok_but_crazy_body() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -199,12 +200,12 @@ class ServerCommunicationShowRegionTest {
             )
 
         // Failure Test
-        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(false)
+        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT)
         mockServer.verify()
     }
 
     @Test
-    fun is_returning_true_empty_node() {
+    fun is_returning_SUCCESS_empty_node() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -223,7 +224,7 @@ class ServerCommunicationShowRegionTest {
             )
 
         // Failure Test
-        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(true)
+        Assertions.assertThat(serverCommunication.showRegion()).isEqualTo(FunctionResponse.SUCCESS)
         mockServer.verify()
     }
 }

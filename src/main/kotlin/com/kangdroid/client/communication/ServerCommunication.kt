@@ -118,9 +118,9 @@ class ServerCommunication {
         return FunctionResponse.SUCCESS
     }
 
-    fun showRegion(): Boolean {
+    fun showRegion(): FunctionResponse {
         val finalUrl: String = "$serverAddress/api/client/node"
-        if (!checkToken()) return false
+        if (!checkToken()) return FunctionResponse.CLIENT_NO_TOKEN
 
         // Request!
         val responseEntity: ResponseEntity<String> = getResponseEntityInStringFormat {
@@ -128,15 +128,16 @@ class ServerCommunication {
                 add("X-AUTH-TOKEN", token)
             }
             restTemplate.exchange(finalUrl, HttpMethod.GET, HttpEntity<Void>(httpHeaders))
-        } ?: return false
+        } ?: return FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX
 
         val body: String = responseEntity.body ?: run {
             KDRPrinter.printError("Cannot get body part from server.")
-            return false
+            return FunctionResponse.SERVER_RESPONSE_OK_BUT_NO_BODY
         }
 
         // Get List of Values
-        val listNode: Array<NodeInformationResponseDto> = getObjectValues<Array<NodeInformationResponseDto>>(body) ?: return false
+        val listNode: Array<NodeInformationResponseDto> = getObjectValues<Array<NodeInformationResponseDto>>(body)
+            ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
 
         if (listNode.isEmpty()) {
             KDRPrinter.printNormal("There is NO registered node on server!")
@@ -147,7 +148,7 @@ class ServerCommunication {
                 KDRPrinter.printNormal("Load: ${node.nodeLoadPercentage}\n")
             }
         }
-        return true
+        return FunctionResponse.SUCCESS
     }
 
     fun showClientContainer(): Boolean {
