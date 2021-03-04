@@ -97,7 +97,7 @@ class ServerCommunicationLogInTest {
     }
 
     @Test
-    fun loginIsSuccessful() {
+    fun login_returns_success_when_succeeds() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -119,7 +119,7 @@ class ServerCommunicationLogInTest {
     }
 
     @Test
-    fun isLoginReturnsFalseSuccessCodeWrongBody() {
+    fun login_returns_SERVER_RESPONSE_OK_BUT_WRONG_FORMAT_when_ok_but_wrong_format() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -141,13 +141,13 @@ class ServerCommunicationLogInTest {
     }
 
     @Test
-    fun isLoginReturnsFalseFailedServer() {
+    fun login_returns_4xx_5xx_response_when_internal_server_error() {
         // Without mock server
         assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
     }
 
     @Test
-    fun isLoginReturnsFalseWithoutBody() {
+    fun login_returns_SERVER_RESPONSE_OK_BUT_NO_BODY_when_ok_but_empty_body() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -169,7 +169,7 @@ class ServerCommunicationLogInTest {
     }
 
     @Test
-    fun isLoginReturnsFalseWithWrongID() {
+    fun login_returns_4xx_5xx_when_ID_incorrect() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -197,7 +197,7 @@ class ServerCommunicationLogInTest {
     }
 
     @Test
-    fun isLoginReturnsFalseWithWrongPassword() {
+    fun login_returns_4xx_5xx_when_PW_incorrect() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -225,7 +225,7 @@ class ServerCommunicationLogInTest {
     }
 
     @Test
-    fun isLoginReturnsFalseInternalUnknownError() {
+    fun login_returns_4xx_5xx_when_internal_error() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -247,7 +247,7 @@ class ServerCommunicationLogInTest {
     }
 
     @Test
-    fun registerIsSuccessful() {
+    fun register_returns_success_normal_case() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -273,7 +273,7 @@ class ServerCommunicationLogInTest {
     }
 
     @Test
-    fun isRegisterReturnsFalseSuccessCodeWrongBody() {
+    fun register_returns_SERVER_RESPONSE_OK_BUT_WRONG_FORMAT_when_ok_but_wrong_body() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -295,13 +295,13 @@ class ServerCommunicationLogInTest {
     }
 
     @Test
-    fun isRegisterReturnsFalseFailedServer() {
+    fun register_returns_4xx_5xx_when_internal_error() {
         // Without mock server
         assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
     }
 
     @Test
-    fun isRegisterReturnsFalseWithoutBody() {
+    fun register_returns_SERVER_RESPONSE_OK_BUT_NO_BODY_when_ok_but_no_body() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -323,7 +323,7 @@ class ServerCommunicationLogInTest {
     }
 
     @Test
-    fun isRegisterReturnsFalseWithDuplicatedID() {
+    fun register_returns_4xx_5xx_when_conflict() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -351,7 +351,7 @@ class ServerCommunicationLogInTest {
     }
 
     @Test
-    fun isRegisterReturnsFalseInternalUnknownError() {
+    fun register_returns_4xx_5xx_when_internal_error_response() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
