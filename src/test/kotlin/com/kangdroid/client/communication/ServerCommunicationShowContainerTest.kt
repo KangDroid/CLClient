@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.kangdroid.client.communication.dto.ErrorResponse
 import com.kangdroid.client.communication.dto.NodeInformationResponseDto
 import com.kangdroid.client.communication.dto.UserImageListResponseDto
+import com.kangdroid.client.error.FunctionResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -54,7 +55,7 @@ class ServerCommunicationShowContainerTest {
     }
 
     @Test
-    fun is_returning_true_normal_condition() {
+    fun is_returning_SUCCESS_normal_condition() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -79,11 +80,11 @@ class ServerCommunicationShowContainerTest {
             )
 
         // do normal work
-        assertThat(serverCommunication.showClientContainer()).isEqualTo(true)
+        assertThat(serverCommunication.showClientContainer()).isEqualTo(FunctionResponse.SUCCESS)
     }
 
     @Test
-    fun is_returning_true_without_actual_container() {
+    fun is_returning_SUCCESS_without_actual_container() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -102,11 +103,11 @@ class ServerCommunicationShowContainerTest {
             )
 
         // do normal work
-        assertThat(serverCommunication.showClientContainer()).isEqualTo(true)
+        assertThat(serverCommunication.showClientContainer()).isEqualTo(FunctionResponse.SUCCESS)
     }
 
     @Test
-    fun is_returning_false_without_token() {
+    fun is_returning_NO_TOKEN_without_token() {
         deInitTest() // Null-fy token
 
         // Setup mockServer
@@ -133,16 +134,16 @@ class ServerCommunicationShowContainerTest {
             )
 
         // do normal work
-        assertThat(serverCommunication.showClientContainer()).isEqualTo(false)
+        assertThat(serverCommunication.showClientContainer()).isEqualTo(FunctionResponse.CLIENT_NO_TOKEN)
     }
 
     @Test
-    fun is_returning_false_without_server() {
-        assertThat(serverCommunication.showClientContainer()).isEqualTo(false)
+    fun is_returning_4xx_5xx_without_server() {
+        assertThat(serverCommunication.showClientContainer()).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
     }
 
     @Test
-    fun is_returning_false_with_internal_server_error() {
+    fun is_returning_4xx_5xx_with_internal_server_error() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -163,11 +164,11 @@ class ServerCommunicationShowContainerTest {
             )
 
         // do normal work
-        assertThat(serverCommunication.showClientContainer()).isEqualTo(false)
+        assertThat(serverCommunication.showClientContainer()).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
     }
 
     @Test
-    fun is_returning_false_with_404_error() {
+    fun is_returning_4xx_5xx_with_404_error() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -188,11 +189,11 @@ class ServerCommunicationShowContainerTest {
             )
 
         // do normal work
-        assertThat(serverCommunication.showClientContainer()).isEqualTo(false)
+        assertThat(serverCommunication.showClientContainer()).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
     }
 
     @Test
-    fun is_returning_false_response_ok_but_no_body() {
+    fun is_returning_SERVER_RESPONSE_OK_BUT_NO_BODY_response_ok_but_no_body() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -209,11 +210,11 @@ class ServerCommunicationShowContainerTest {
             )
 
         // do normal work
-        assertThat(serverCommunication.showClientContainer()).isEqualTo(false)
+        assertThat(serverCommunication.showClientContainer()).isEqualTo(FunctionResponse.SERVER_RESPONSE_OK_BUT_NO_BODY)
     }
 
     @Test
-    fun is_returning_false_response_ok_but_wrong_body() {
+    fun is_returning_SERVER_RESPONSE_OK_BUT_WRONG_FORMAT_response_ok_but_wrong_body() {
         // Setup mockServer
         mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
             .ignoreExpectOrder(true).build()
@@ -230,6 +231,6 @@ class ServerCommunicationShowContainerTest {
             )
 
         // do normal work
-        assertThat(serverCommunication.showClientContainer()).isEqualTo(false)
+        assertThat(serverCommunication.showClientContainer()).isEqualTo(FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT)
     }
 }

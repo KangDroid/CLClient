@@ -151,9 +151,9 @@ class ServerCommunication {
         return FunctionResponse.SUCCESS
     }
 
-    fun showClientContainer(): Boolean {
+    fun showClientContainer(): FunctionResponse {
         val clientContainerShowUrl: String = "$serverAddress/api/client/container"
-        if (!checkToken()) return false
+        if (!checkToken()) return FunctionResponse.CLIENT_NO_TOKEN
 
         // Request!
         val responseEntity: ResponseEntity<String> = getResponseEntityInStringFormat {
@@ -161,17 +161,17 @@ class ServerCommunication {
                 add("X-AUTH-TOKEN", token)
             }
             restTemplate.exchange(clientContainerShowUrl, HttpMethod.GET, HttpEntity<Void>(httpHeaders))
-        } ?: return false
+        } ?: return FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX
 
         // get Response Body
         val responseBody: String = responseEntity.body ?: run {
             KDRPrinter.printError("Cannot get body part from server.")
-            return false
+            return FunctionResponse.SERVER_RESPONSE_OK_BUT_NO_BODY
         }
 
         // Parse as Objects
         val userImageResponseList: Array<UserImageListResponseDto> =
-            getObjectValues<Array<UserImageListResponseDto>>(responseBody) ?: return false
+            getObjectValues<Array<UserImageListResponseDto>>(responseBody) ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
 
         if (userImageResponseList.isEmpty()) {
             KDRPrinter.printNormal("There is NO created/registered container on server!")
@@ -183,6 +183,6 @@ class ServerCommunication {
                 KDRPrinter.printNormal("Compute Region: ${userImageResponse.computeRegion}\n")
             }
         }
-        return true
+        return FunctionResponse.SUCCESS
     }
 }
