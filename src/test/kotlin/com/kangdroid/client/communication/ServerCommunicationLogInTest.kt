@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.kangdroid.client.communication.dto.ErrorResponse
 import com.kangdroid.client.communication.dto.UserLoginRequestDto
 import com.kangdroid.client.communication.dto.UserRegisterResponseDto
+import com.kangdroid.client.error.FunctionResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -113,7 +114,7 @@ class ServerCommunicationLogInTest {
             )
 
         // Successful Test
-        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(true)
+        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(FunctionResponse.SUCCESS)
         mockServer.verify()
     }
 
@@ -135,14 +136,14 @@ class ServerCommunicationLogInTest {
             )
 
         // Successful Test
-        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
+        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT)
         mockServer.verify()
     }
 
     @Test
     fun isLoginReturnsFalseFailedServer() {
         // Without mock server
-        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
+        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
     }
 
     @Test
@@ -163,7 +164,7 @@ class ServerCommunicationLogInTest {
             )
 
         // Failure Test
-        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
+        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(FunctionResponse.SERVER_RESPONSE_OK_BUT_NO_BODY)
         mockServer.verify()
     }
 
@@ -191,7 +192,7 @@ class ServerCommunicationLogInTest {
             )
 
         // Failure Test
-        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
+        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
         mockServer.verify()
     }
 
@@ -219,7 +220,7 @@ class ServerCommunicationLogInTest {
             )
 
         // Failure Test
-        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
+        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
         mockServer.verify()
     }
 
@@ -241,7 +242,7 @@ class ServerCommunicationLogInTest {
             )
 
         // Failure Test
-        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(false)
+        assertThat(serverCommunication.login(userLoginRequestDto)).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
         mockServer.verify()
     }
 
@@ -267,7 +268,7 @@ class ServerCommunicationLogInTest {
             )
 
         // Successful Test
-        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(true)
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(FunctionResponse.SUCCESS)
         mockServer.verify()
     }
 
@@ -289,14 +290,14 @@ class ServerCommunicationLogInTest {
             )
 
         // Successful Test
-        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(false)
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT)
         mockServer.verify()
     }
 
     @Test
     fun isRegisterReturnsFalseFailedServer() {
         // Without mock server
-        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(false)
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
     }
 
     @Test
@@ -317,7 +318,7 @@ class ServerCommunicationLogInTest {
             )
 
         // Failure Test
-        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(false)
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(FunctionResponse.SERVER_RESPONSE_OK_BUT_NO_BODY)
         mockServer.verify()
     }
 
@@ -345,7 +346,7 @@ class ServerCommunicationLogInTest {
             )
 
         // Failure Test
-        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(false)
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
         mockServer.verify()
     }
 
@@ -373,7 +374,7 @@ class ServerCommunicationLogInTest {
             )
 
         // Failure Test
-        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(false)
+        assertThat(serverCommunication.login(userLoginRequestDto, false)).isEqualTo(FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX)
         mockServer.verify()
     }
 }

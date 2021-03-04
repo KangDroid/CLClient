@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.kangdroid.client.communication.dto.*
+import com.kangdroid.client.error.FunctionResponse
 import com.kangdroid.client.printer.KDRPrinter
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -83,7 +84,7 @@ class ServerCommunication {
         }.getOrNull()
     }
 
-    fun login(userLoginRequestDto: UserLoginRequestDto, isLogin: Boolean = true): Boolean {
+    fun login(userLoginRequestDto: UserLoginRequestDto, isLogin: Boolean = true): FunctionResponse {
         val finalAddress: String = if (isLogin) {
             "$serverAddress/api/client/login"
         } else {
@@ -93,26 +94,28 @@ class ServerCommunication {
         // Communicate with server
         val loginResponseEntity: ResponseEntity<String> = getResponseEntityInStringFormat {
             restTemplate.exchange(finalAddress, HttpMethod.POST, HttpEntity(userLoginRequestDto))
-        } ?: return false
+        } ?: return FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX
 
         // Get Body
         val body: String = loginResponseEntity.body ?: run {
             KDRPrinter.printError("Cannot get body part from server.")
-            return false
+            return FunctionResponse.SERVER_RESPONSE_OK_BUT_NO_BODY
         }
 
         if (isLogin) {
             // Object string to UserLoginResponseDto
-            val userLoginResponseDto: UserLoginResponseDto = getObjectValues<UserLoginResponseDto>(body) ?: return false
+            val userLoginResponseDto: UserLoginResponseDto = getObjectValues<UserLoginResponseDto>(body)
+                ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
 
             // Finally use token
             token = userLoginResponseDto.token
             KDRPrinter.printNormal("Login Succeed!")
         } else {
-            val userRegisterResponseDto: UserRegisterResponseDto = getObjectValues<UserRegisterResponseDto>(body) ?: return false
+            val userRegisterResponseDto: UserRegisterResponseDto = getObjectValues<UserRegisterResponseDto>(body)
+                ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
             KDRPrinter.printNormal("Successfully registered user: ${userRegisterResponseDto.registeredId}")
         }
-        return true
+        return FunctionResponse.SUCCESS
     }
 
     fun showRegion(): Boolean {
