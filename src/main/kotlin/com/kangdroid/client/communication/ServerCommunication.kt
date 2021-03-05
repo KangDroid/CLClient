@@ -19,6 +19,7 @@ class ServerCommunication {
     private val serverAddress: String = "http://localhost:8080"
     private var token: String? = null
     private val objectMapper: ObjectMapper = ObjectMapper()
+    private var nodeList: MutableList<NodeInformationResponseDto> = mutableListOf()
 
     fun isServerAlive(): Boolean {
         val finalAddress: String = "$serverAddress/api/client/alive"
@@ -139,11 +140,15 @@ class ServerCommunication {
         val listNode: Array<NodeInformationResponseDto> = getObjectValues<Array<NodeInformationResponseDto>>(body)
             ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
 
+        // Clear node first
+        nodeList.clear()
+
         if (listNode.isEmpty()) {
             KDRPrinter.printNormal("There is NO registered node on server!")
         } else {
             KDRPrinter.printNormal("Total Nodes: ${listNode.size}")
             for (node in listNode) {
+                nodeList.add(node)
                 KDRPrinter.printNormal("Region: ${node.regionName}")
                 KDRPrinter.printNormal("Load: ${node.nodeLoadPercentage}\n")
             }
