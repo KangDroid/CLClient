@@ -190,4 +190,42 @@ class ServerCommunication {
         }
         return FunctionResponse.SUCCESS
     }
+
+    fun createClientContainer(region: String): FunctionResponse {
+        if (!checkToken()) return FunctionResponse.CLIENT_NO_TOKEN
+        val clientCreateContainerUrl: String = "$serverAddress/api/client/container"
+
+        // Temp DTO Declare
+        class UserImageSaveRequestDto(
+            var userToken: String = "",
+            var dockerId: String = "",
+            var computeRegion: String
+        )
+
+        // Request!
+        val responseEntity: ResponseEntity<String> = getResponseEntityInStringFormat {
+            val httpHeaders: HttpHeaders = HttpHeaders().apply {
+                add("X-AUTH-TOKEN", token)
+            }
+            restTemplate.exchange(clientCreateContainerUrl, HttpMethod.POST, HttpEntity<UserImageSaveRequestDto>(UserImageSaveRequestDto(computeRegion = region), httpHeaders))
+        } ?: return FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX
+
+        // get Response Body
+        val responseBody: String = responseEntity.body ?: run {
+            KDRPrinter.printError("Cannot get body part from server.")
+            return FunctionResponse.SERVER_RESPONSE_OK_BUT_NO_BODY
+        }
+
+        println(responseBody)
+
+        // Parse as Objects
+        val userImageResponseList: UserImageResponseDto =
+            getObjectValues<UserImageResponseDto>(responseBody) ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
+
+        KDRPrinter.printNormal("Container-ID: ${userImageResponseList.containerId}")
+        KDRPrinter.printNormal("Successfully created on: ${userImageResponseList.regionLocation}")
+        KDRPrinter.printNormal("You can ssh within \"ssh root@${userImageResponseList.targetIpAddress} -p ${userImageResponseList.targetPort}\"")
+
+        return FunctionResponse.SUCCESS
+    }
 }
