@@ -226,4 +226,34 @@ class ServerCommunication {
 
         return FunctionResponse.SUCCESS
     }
+
+    fun restartClientContainer(containerListIndex: Int): FunctionResponse {
+        if (!checkToken()) return FunctionResponse.CLIENT_NO_TOKEN
+        val clientRestartContainerUrl: String = "$serverAddress/api/client/restart"
+
+        if (containerListIndex < 1 || containerListIndex > containerList.size) {
+            KDRPrinter.printError("Wrong input range!")
+            KDRPrinter.printError("Input range should be: 1 ~ $containerListIndex")
+            return FunctionResponse.WRONG_NUMBER_INPUT
+        }
+
+        class UserRestartRequestDto(
+            var userToken: String,
+            var containerId: String
+        )
+
+        // Request!
+        getResponseEntityInStringFormat {
+            val httpHeaders: HttpHeaders = HttpHeaders().apply {
+                add("X-AUTH-TOKEN", token)
+            }
+            restTemplate.exchange(clientRestartContainerUrl, HttpMethod.POST, HttpEntity<UserRestartRequestDto>(UserRestartRequestDto(
+                userToken = "",
+                containerId = containerList[containerListIndex - 1].dockerId
+            ), httpHeaders))
+        } ?: return FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX
+
+        KDRPrinter.printNormal("Successfully restarted container, ID: ${containerList[containerListIndex-1].dockerId}")
+        return FunctionResponse.SUCCESS
+    }
 }
