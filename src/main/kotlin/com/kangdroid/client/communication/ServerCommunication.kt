@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.kangdroid.client.communication.dto.*
+import com.kangdroid.client.configuration.ServerConfigurationComponent
 import com.kangdroid.client.error.FunctionResponse
 import com.kangdroid.client.printer.KDRPrinter
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -16,13 +18,16 @@ import org.springframework.web.client.*
 @Component
 class ServerCommunication {
     val restTemplate: RestTemplate = RestTemplate()
-    private val serverAddress: String = "http://localhost:8080"
+
+    @Autowired
+    private lateinit var serverConfigurationComponent: ServerConfigurationComponent
+    
     private var token: String? = null
     private val objectMapper: ObjectMapper = ObjectMapper()
     private var containerList: MutableList<UserImageListResponseDto> = mutableListOf()
 
     fun isServerAlive(): Boolean {
-        val finalAddress: String = "$serverAddress/api/client/alive"
+        val finalAddress: String = "${serverConfigurationComponent.masterServerAddress}/api/client/alive"
         lateinit var responseEntity: ResponseEntity<String>
         runCatching {
             responseEntity = restTemplate.getForEntity(finalAddress)
@@ -87,9 +92,9 @@ class ServerCommunication {
 
     fun login(userLoginRequestDto: UserLoginRequestDto, isLogin: Boolean = true): FunctionResponse {
         val finalAddress: String = if (isLogin) {
-            "$serverAddress/api/client/login"
+            "${serverConfigurationComponent.masterServerAddress}/api/client/login"
         } else {
-            "$serverAddress/api/client/register"
+            "${serverConfigurationComponent.masterServerAddress}/api/client/register"
         }
 
         // Communicate with server
@@ -120,7 +125,7 @@ class ServerCommunication {
     }
 
     fun showRegion(): FunctionResponse {
-        val finalUrl: String = "$serverAddress/api/client/node"
+        val finalUrl: String = "${serverConfigurationComponent.masterServerAddress}/api/client/node"
         if (!checkToken()) return FunctionResponse.CLIENT_NO_TOKEN
 
         // Request!
@@ -153,7 +158,7 @@ class ServerCommunication {
     }
 
     fun showClientContainer(): FunctionResponse {
-        val clientContainerShowUrl: String = "$serverAddress/api/client/container"
+        val clientContainerShowUrl: String = "${serverConfigurationComponent.masterServerAddress}/api/client/container"
         if (!checkToken()) return FunctionResponse.CLIENT_NO_TOKEN
 
         // Request!
@@ -193,7 +198,7 @@ class ServerCommunication {
 
     fun createClientContainer(region: String): FunctionResponse {
         if (!checkToken()) return FunctionResponse.CLIENT_NO_TOKEN
-        val clientCreateContainerUrl: String = "$serverAddress/api/client/container"
+        val clientCreateContainerUrl: String = "${serverConfigurationComponent.masterServerAddress}/api/client/container"
 
         // Temp DTO Declare
         class UserImageSaveRequestDto(
@@ -229,7 +234,7 @@ class ServerCommunication {
 
     fun restartClientContainer(containerListIndex: Int): FunctionResponse {
         if (!checkToken()) return FunctionResponse.CLIENT_NO_TOKEN
-        val clientRestartContainerUrl: String = "$serverAddress/api/client/restart"
+        val clientRestartContainerUrl: String = "${serverConfigurationComponent.masterServerAddress}/api/client/restart"
 
         if (containerListIndex < 1 || containerListIndex > containerList.size) {
             KDRPrinter.printError("Wrong input range!")
