@@ -43,6 +43,10 @@ class MainEntry {
                         KDRPrinter.printNormal("Successfully logged in!")
                     }
                 }
+                else -> {
+                    KDRPrinter.printError("Unknown number $menuSelection.")
+                    menuSelection = 0
+                }
             }
         } while (menuSelection != 0)
     }
