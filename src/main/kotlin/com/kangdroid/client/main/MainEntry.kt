@@ -23,6 +23,7 @@ class MainEntry {
      */
     @PostConstruct
     fun startMain() {
+        if (System.getProperty("kdr.isTesting") == "test") return
         var menuSelection: Int
 
         if (!serverCommunication.isServerAlive()) {
