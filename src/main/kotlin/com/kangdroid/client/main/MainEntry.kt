@@ -42,6 +42,14 @@ class MainEntry {
                     }
                 }
 
+                3 -> {
+                    // show Region first
+                    if (serverCommunication.showRegion() != FunctionResponse.SUCCESS) return
+                    KDRPrinter.printNormal("Input region name to create container: ", false)
+                    val regionName: String = inputScanner.nextLine()
+                    serverCommunication.createClientContainer(regionName)
+                }
+
                 else -> {
                     KDRPrinter.printError("Unknown number $menuSelection.")
                     menuSelection = 0
