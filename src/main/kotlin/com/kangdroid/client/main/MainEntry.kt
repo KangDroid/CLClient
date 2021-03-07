@@ -1,9 +1,11 @@
 package com.kangdroid.client.main
 
 import com.kangdroid.client.communication.ServerCommunication
+import com.kangdroid.client.communication.dto.UserLoginRequestDto
 import com.kangdroid.client.printer.KDRPrinter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.io.Console
 import java.util.*
 import javax.annotation.PostConstruct
 
@@ -68,5 +70,20 @@ class MainEntry {
     private fun clearScreen() {
         print("\u001B[H\u001B[2J");
         System.out.flush();
+    }
+
+    private fun inputUserCredential(): UserLoginRequestDto? {
+        val console: Console? = System.console()
+        val userLoginRequestDto: UserLoginRequestDto = UserLoginRequestDto("", "")
+        return if (console == null) {
+            // Console does not exists.
+            KDRPrinter.printError("Cannot connect to local console!")
+            KDRPrinter.printError("This program needs console to continue!")
+            null
+        } else {
+            userLoginRequestDto.userName = console.readLine("Input ID: ")
+            userLoginRequestDto.userPassword = console.readPassword("Input Password" ).toString()
+            userLoginRequestDto
+        }
     }
 }
