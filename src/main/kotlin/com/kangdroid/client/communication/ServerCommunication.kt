@@ -19,7 +19,7 @@ class ServerCommunication {
     private val serverAddress: String = "http://localhost:8080"
     private var token: String? = null
     private val objectMapper: ObjectMapper = ObjectMapper()
-    private var nodeList: MutableList<NodeInformationResponseDto> = mutableListOf()
+    private var containerList: MutableList<UserImageListResponseDto> = mutableListOf()
 
     fun isServerAlive(): Boolean {
         val finalAddress: String = "$serverAddress/api/client/alive"
@@ -140,15 +140,11 @@ class ServerCommunication {
         val listNode: Array<NodeInformationResponseDto> = getObjectValues<Array<NodeInformationResponseDto>>(body)
             ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
 
-        // Clear node first
-        nodeList.clear()
-
         if (listNode.isEmpty()) {
             KDRPrinter.printNormal("There is NO registered node on server!")
         } else {
             KDRPrinter.printNormal("Total Nodes: ${listNode.size}")
             for (node in listNode) {
-                nodeList.add(node)
                 KDRPrinter.printNormal("Region: ${node.regionName}")
                 KDRPrinter.printNormal("Load: ${node.nodeLoadPercentage}\n")
             }
@@ -178,12 +174,16 @@ class ServerCommunication {
         val userImageResponseList: Array<UserImageListResponseDto> =
             getObjectValues<Array<UserImageListResponseDto>>(responseBody) ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
 
+        // Clear container
+        containerList.clear()
+
         if (userImageResponseList.isEmpty()) {
             KDRPrinter.printNormal("There is NO created/registered container on server!")
         } else {
             KDRPrinter.printNormal("Container information for: ${userImageResponseList[0].userName}\n")
             KDRPrinter.printNormal("Total Containers: ${userImageResponseList.size}")
             for (userImageResponse in userImageResponseList) {
+                containerList.add(userImageResponse)
                 KDRPrinter.printNormal("Docker ID: ${userImageResponse.dockerId}")
                 KDRPrinter.printNormal("Compute Region: ${userImageResponse.computeRegion}\n")
             }
