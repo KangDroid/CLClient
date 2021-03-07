@@ -2,6 +2,7 @@ package com.kangdroid.client.main
 
 import com.kangdroid.client.communication.ServerCommunication
 import com.kangdroid.client.communication.dto.UserLoginRequestDto
+import com.kangdroid.client.error.FunctionResponse
 import com.kangdroid.client.printer.KDRPrinter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -33,6 +34,15 @@ class MainEntry {
             menuSelection = printMenu()
 
             when (menuSelection) {
+                1 -> {
+                    val userLoginRequestDto: UserLoginRequestDto =
+                        inputUserCredential() ?: return
+                    if (serverCommunication.login(userLoginRequestDto) != FunctionResponse.SUCCESS) {
+                        return
+                    } else {
+                        KDRPrinter.printNormal("Successfully logged in!")
+                    }
+                }
             }
         } while (menuSelection != 0)
     }
@@ -82,7 +92,7 @@ class MainEntry {
             null
         } else {
             userLoginRequestDto.userName = console.readLine("Input ID: ")
-            userLoginRequestDto.userPassword = console.readPassword("Input Password" ).toString()
+            userLoginRequestDto.userPassword = console.readPassword("Input Password: " ).toString()
             userLoginRequestDto
         }
     }
