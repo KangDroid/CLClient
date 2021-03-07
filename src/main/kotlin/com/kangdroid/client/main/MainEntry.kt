@@ -43,6 +43,15 @@ class MainEntry {
                         KDRPrinter.printNormal("Successfully logged in!")
                     }
                 }
+
+                2 -> {
+                    val userLoginRequestDto: UserLoginRequestDto =
+                        inputUserCredential() ?: return
+                    if (serverCommunication.login(userLoginRequestDto, false) != FunctionResponse.SUCCESS) {
+                        menuSelection = 0
+                    }
+                }
+
                 else -> {
                     KDRPrinter.printError("Unknown number $menuSelection.")
                     menuSelection = 0
