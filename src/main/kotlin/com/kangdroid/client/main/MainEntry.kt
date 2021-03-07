@@ -81,8 +81,8 @@ class MainEntry {
     }
 
     private fun clearScreen() {
-        print("\u001B[H\u001B[2J");
-        System.out.flush();
+        print("\u001B[H\u001B[2J")
+        System.out.flush()
     }
 
     private fun inputUserCredential(): UserLoginRequestDto? {
@@ -95,7 +95,7 @@ class MainEntry {
             null
         } else {
             userLoginRequestDto.userName = console.readLine("Input ID: ")
-            userLoginRequestDto.userPassword = console.readPassword("Input Password: " ).toString()
+            userLoginRequestDto.userPassword = String(console.readPassword("Input Password: " ))
             userLoginRequestDto
         }
     }
