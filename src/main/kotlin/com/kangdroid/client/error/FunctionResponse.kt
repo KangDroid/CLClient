@@ -3,6 +3,7 @@ package com.kangdroid.client.error
 enum class FunctionResponse {
     // Success
     SUCCESS,
+    EMPTY_LIST,
     // Fail With Reason
     CLIENT_NO_TOKEN,
     SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX,

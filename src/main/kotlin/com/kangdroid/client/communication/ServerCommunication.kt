@@ -184,6 +184,7 @@ class ServerCommunication {
 
         if (userImageResponseList.isEmpty()) {
             KDRPrinter.printNormal("There is NO created/registered container on server!")
+            return FunctionResponse.EMPTY_LIST
         } else {
             KDRPrinter.printNormal("Container information for: ${userImageResponseList[0].userName}\n")
             KDRPrinter.printNormal("Total Containers: ${userImageResponseList.size}")
