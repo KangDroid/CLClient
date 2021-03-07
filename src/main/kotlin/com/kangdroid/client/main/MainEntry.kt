@@ -54,6 +54,13 @@ class MainEntry {
                     serverCommunication.showClientContainer()
                 }
 
+                5 -> {
+                    if (serverCommunication.showClientContainer() != FunctionResponse.SUCCESS) return
+                    KDRPrinter.printNormal("Input number of index to restart: ", false)
+                    val index: String = inputScanner.nextLine()
+                    serverCommunication.restartClientContainer(convertStringToInt(index) ?: return)
+                }
+
                 else -> {
                     KDRPrinter.printError("Unknown number $menuSelection.")
                     menuSelection = 0
