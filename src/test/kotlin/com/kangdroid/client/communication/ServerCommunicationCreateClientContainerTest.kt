@@ -203,26 +203,4 @@ class ServerCommunicationCreateClientContainerTest {
 
         assertThat(serverCommunication.createClientContainer(correctRegion)).isEqualTo(FunctionResponse.SUCCESS)
     }
-
-    @Test
-    fun is_returning_EMPTY_LIST_master_empty_list() {
-        // Setup mockServer
-        mockServer = MockRestServiceServer.bindTo(serverCommunication.restTemplate)
-            .ignoreExpectOrder(true).build()
-        mockServer.expect(
-            ExpectedCount.manyTimes(),
-            MockRestRequestMatchers.requestTo("$serverAddress/api/client/container")
-        )
-            .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
-            .andRespond(
-                MockRestResponseCreators.withStatus(HttpStatus.OK)
-                    .body(
-                        objectMapper.writeValueAsString(
-                            emptyList<UserImageResponseDto>()
-                        )
-                    )
-            )
-
-        assertThat(serverCommunication.createClientContainer(correctRegion)).isEqualTo(FunctionResponse.EMPTY_LIST)
-    }
 }

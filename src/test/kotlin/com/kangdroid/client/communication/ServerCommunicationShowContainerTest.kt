@@ -103,7 +103,7 @@ class ServerCommunicationShowContainerTest {
             )
 
         // do normal work
-        assertThat(serverCommunication.showClientContainer()).isEqualTo(FunctionResponse.SUCCESS)
+        assertThat(serverCommunication.showClientContainer()).isEqualTo(FunctionResponse.EMPTY_LIST)
     }
 
     @Test
