@@ -34,20 +34,10 @@ class MainEntry {
             menuSelection = printMenu()
 
             when (menuSelection) {
-                1 -> {
+                1, 2 -> {
                     val userLoginRequestDto: UserLoginRequestDto =
                         inputUserCredential() ?: return
-                    if (serverCommunication.login(userLoginRequestDto) != FunctionResponse.SUCCESS) {
-                        menuSelection = 0
-                    } else {
-                        KDRPrinter.printNormal("Successfully logged in!")
-                    }
-                }
-
-                2 -> {
-                    val userLoginRequestDto: UserLoginRequestDto =
-                        inputUserCredential() ?: return
-                    if (serverCommunication.login(userLoginRequestDto, false) != FunctionResponse.SUCCESS) {
+                    if (serverCommunication.login(userLoginRequestDto, (menuSelection == 1)) != FunctionResponse.SUCCESS) {
                         menuSelection = 0
                     }
                 }
