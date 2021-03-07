@@ -50,6 +50,10 @@ class MainEntry {
                     serverCommunication.createClientContainer(regionName)
                 }
 
+                4 -> {
+                    serverCommunication.showClientContainer()
+                }
+
                 else -> {
                     KDRPrinter.printError("Unknown number $menuSelection.")
                     menuSelection = 0
