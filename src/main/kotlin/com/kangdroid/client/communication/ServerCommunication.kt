@@ -216,8 +216,6 @@ class ServerCommunication {
             return FunctionResponse.SERVER_RESPONSE_OK_BUT_NO_BODY
         }
 
-        println(responseBody)
-
         // Parse as Objects
         val userImageResponseList: UserImageResponseDto =
             getObjectValues<UserImageResponseDto>(responseBody) ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
