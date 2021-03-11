@@ -18,13 +18,26 @@ class MainEntry {
     // Scanner
     val inputScanner: Scanner = Scanner(System.`in`)
 
+    enum class MainMenuEntry(private val menuName: String) {
+        LOGIN("Login"),
+        REGISTER("Register"),
+        REQUEST_IMAGE("Request Image"),
+        LIST_CONTAINER("List Registered Container"),
+        RESTART_CONTAINER("Restart Container"),
+        EXIT("Exit");
+
+        override fun toString(): String {
+            return "${ordinal + 1}. $menuName"
+        }
+    }
+
     /**
      * Main Entry starts here!
      */
     @PostConstruct
     fun startMain() {
         if (System.getProperty("kdr.isTesting") == "test") return
-        var menuSelection: Int
+        var menuSelection: MainMenuEntry
 
         if (!serverCommunication.isServerAlive()) {
             KDRPrinter.printError("Cannot connect to server!")
@@ -35,15 +48,15 @@ class MainEntry {
             menuSelection = printMenu()
 
             when (menuSelection) {
-                1, 2 -> {
+                MainMenuEntry.LOGIN, MainMenuEntry.REGISTER -> {
                     val userLoginRequestDto: UserLoginRequestDto =
                         inputUserCredential() ?: return
-                    if (serverCommunication.login(userLoginRequestDto, (menuSelection == 1)) != FunctionResponse.SUCCESS) {
-                        menuSelection = 0
+                    if (serverCommunication.login(userLoginRequestDto, (menuSelection == MainMenuEntry.LOGIN)) != FunctionResponse.SUCCESS) {
+                        menuSelection = MainMenuEntry.EXIT
                     }
                 }
 
-                3 -> {
+                MainMenuEntry.REQUEST_IMAGE -> {
                     // show Region first
                     if (serverCommunication.showRegion() != FunctionResponse.SUCCESS) return
                     KDRPrinter.printNormal("Input region name to create container: ", false)
@@ -51,42 +64,46 @@ class MainEntry {
                     serverCommunication.createClientContainer(regionName)
                 }
 
-                4 -> {
+                MainMenuEntry.LIST_CONTAINER -> {
                     serverCommunication.showClientContainer()
                 }
 
-                5 -> {
+                MainMenuEntry.RESTART_CONTAINER -> {
                     if (serverCommunication.showClientContainer() != FunctionResponse.SUCCESS) return
                     KDRPrinter.printNormal("Input number of index to restart: ", false)
                     val index: String = inputScanner.nextLine()
                     serverCommunication.restartClientContainer(convertStringToInt(index) ?: return)
                 }
 
-                else -> {
-                    KDRPrinter.printError("Unknown number $menuSelection.")
-                    menuSelection = 0
-                }
+                MainMenuEntry.EXIT -> continue
             }
-        } while (menuSelection != 0)
+        } while (menuSelection != MainMenuEntry.EXIT)
     }
 
-    fun printMenu(): Int {
+    fun printMenu(): MainMenuEntry {
         clearScreen()
-        KDRPrinter.printNormal("""
-            KDR-Cloud Menu:
-            1. Login
-            2. Register
-            3. Request Image
-            4. List Registered Container
-            5. Restart Container
-            0. Exit
-            
-            Input Menu Number: 
-        """.trimIndent(), false)
+        KDRPrinter.printNormal("KDR-Cloud Menu: ")
+        enumValues<MainMenuEntry>().forEach {
+            KDRPrinter.printNormal(it.toString())
+        }
+        KDRPrinter.printNormal("\nInput Menu: ", false)
 
         val input: String = inputScanner.nextLine()
 
-        return convertStringToInt(input) ?: 0
+        val inputInt: Int = convertStringToInt(input) ?: MainMenuEntry.EXIT.ordinal
+
+        return convertIntToEnum(inputInt - 1)
+    }
+
+    private fun convertIntToEnum(input: Int): MainMenuEntry {
+        enumValues<MainMenuEntry>().forEach {
+            if (it.ordinal == input) {
+                return it
+            }
+        }
+
+        KDRPrinter.printError("Unknown number ${input+1}.")
+        return MainMenuEntry.EXIT
     }
 
     private fun convertStringToInt(input: String): Int? {
