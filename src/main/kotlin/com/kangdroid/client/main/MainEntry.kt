@@ -122,6 +122,11 @@ class MainEntry {
         System.out.flush()
     }
 
+    private fun waitFor() {
+        print("Press Enter to continue..")
+        inputScanner.nextLine()
+    }
+
     private fun inputUserCredential(): UserLoginRequestDto? {
         val console: Console? = System.console()
         val userLoginRequestDto: UserLoginRequestDto = UserLoginRequestDto("", "")
