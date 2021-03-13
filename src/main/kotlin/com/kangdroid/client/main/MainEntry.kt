@@ -49,19 +49,18 @@ class MainEntry {
 
             when (menuSelection) {
                 MainMenuEntry.LOGIN, MainMenuEntry.REGISTER -> {
-                    val userLoginRequestDto: UserLoginRequestDto =
-                        inputUserCredential() ?: return
-                    if (serverCommunication.login(userLoginRequestDto, (menuSelection == MainMenuEntry.LOGIN)) != FunctionResponse.SUCCESS) {
-                        menuSelection = MainMenuEntry.EXIT
+                    inputUserCredential()?.let {
+                        serverCommunication.login(it, (menuSelection == MainMenuEntry.LOGIN))
                     }
                 }
 
                 MainMenuEntry.REQUEST_IMAGE -> {
                     // show Region first
-                    if (serverCommunication.showRegion() != FunctionResponse.SUCCESS) return
-                    KDRPrinter.printNormal("Input region name to create container: ", false)
-                    val regionName: String = inputScanner.nextLine()
-                    serverCommunication.createClientContainer(regionName)
+                    if (serverCommunication.showRegion() == FunctionResponse.SUCCESS) {
+                        KDRPrinter.printNormal("Input region name to create container: ", false)
+                        val regionName: String = inputScanner.nextLine()
+                        serverCommunication.createClientContainer(regionName)
+                    }
                 }
 
                 MainMenuEntry.LIST_CONTAINER -> {
@@ -69,14 +68,19 @@ class MainEntry {
                 }
 
                 MainMenuEntry.RESTART_CONTAINER -> {
-                    if (serverCommunication.showClientContainer() != FunctionResponse.SUCCESS) return
-                    KDRPrinter.printNormal("Input number of index to restart: ", false)
-                    val index: String = inputScanner.nextLine()
-                    serverCommunication.restartClientContainer(convertStringToInt(index) ?: return)
+                    if (serverCommunication.showClientContainer() == FunctionResponse.SUCCESS) {
+                        KDRPrinter.printNormal("Input number of index to restart: ", false)
+                        val index: String = inputScanner.nextLine()
+                        convertStringToInt(index)?.let {
+                            serverCommunication.restartClientContainer(it)
+                        }
+                    }
                 }
 
                 MainMenuEntry.EXIT -> continue
             }
+
+            waitFor()
         } while (menuSelection != MainMenuEntry.EXIT)
     }
 
