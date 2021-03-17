@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.kangdroid.client.communication.dto.*
 import com.kangdroid.client.configuration.ServerConfigurationComponent
 import com.kangdroid.client.error.FunctionResponse
+import com.kangdroid.client.error.UserRoles
 import com.kangdroid.client.printer.KDRPrinter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
@@ -261,5 +262,31 @@ class ServerCommunication {
 
         KDRPrinter.printNormal("Successfully restarted container, ID: ${containerList[containerListIndex-1].dockerId}")
         return FunctionResponse.SUCCESS
+    }
+
+    fun checkUser(): UserRoles {
+        if (!checkToken()) return UserRoles.ERROR
+
+        val userInfoUrl: String = "${serverConfigurationComponent.masterServerAddress}/api/client/info"
+
+        val responseEntity: ResponseEntity<String> = getResponseEntityInStringFormat {
+            val httpHeaders: HttpHeaders = HttpHeaders().apply {
+                add("X-AUTH-TOKEN", token)
+            }
+
+            restTemplate.exchange(userInfoUrl, HttpMethod.POST, HttpEntity<Void>(httpHeaders))
+        } ?: return UserRoles.ERROR
+
+        val responseBodyAsString: String =
+            responseEntity.body ?: return UserRoles.ERROR
+
+        val userInformationResponse: UserInformationResponseDto =
+            getObjectValues<UserInformationResponseDto>(responseBodyAsString) ?: return UserRoles.ERROR
+
+        return if (userInformationResponse.userRole.contains(UserRoles.ADMIN.roleString)) {
+            UserRoles.ADMIN
+        } else {
+            UserRoles.USER
+        }
     }
 }
