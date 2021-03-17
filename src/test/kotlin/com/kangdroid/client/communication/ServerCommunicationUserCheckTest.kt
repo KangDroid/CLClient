@@ -72,7 +72,7 @@ class ServerCommunicationUserCheckTest {
             ExpectedCount.manyTimes(),
             MockRestRequestMatchers.requestTo("$serverAddress/api/client/info")
         )
-            .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(
                 MockRestResponseCreators.withStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(
@@ -96,7 +96,7 @@ class ServerCommunicationUserCheckTest {
             ExpectedCount.manyTimes(),
             MockRestRequestMatchers.requestTo("$serverAddress/api/client/info")
         )
-            .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(
                 MockRestResponseCreators.withStatus(HttpStatus.OK)
                     .body(
@@ -116,7 +116,7 @@ class ServerCommunicationUserCheckTest {
             ExpectedCount.manyTimes(),
             MockRestRequestMatchers.requestTo("$serverAddress/api/client/info")
         )
-            .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(
                 MockRestResponseCreators.withStatus(HttpStatus.OK)
                     .body(
@@ -136,7 +136,7 @@ class ServerCommunicationUserCheckTest {
             ExpectedCount.manyTimes(),
             MockRestRequestMatchers.requestTo("$serverAddress/api/client/info")
         )
-            .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(
                 MockRestResponseCreators.withStatus(HttpStatus.OK)
                     .body(
@@ -161,7 +161,7 @@ class ServerCommunicationUserCheckTest {
             ExpectedCount.manyTimes(),
             MockRestRequestMatchers.requestTo("$serverAddress/api/client/info")
         )
-            .andExpect(MockRestRequestMatchers.method(HttpMethod.POST))
+            .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
             .andRespond(
                 MockRestResponseCreators.withStatus(HttpStatus.OK)
                     .body(

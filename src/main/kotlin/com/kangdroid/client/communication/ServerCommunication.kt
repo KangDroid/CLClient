@@ -301,7 +301,7 @@ class ServerCommunication {
                 add("X-AUTH-TOKEN", token)
             }
 
-            restTemplate.exchange(userInfoUrl, HttpMethod.POST, HttpEntity<Void>(httpHeaders))
+            restTemplate.exchange(userInfoUrl, HttpMethod.GET, HttpEntity<Void>(httpHeaders))
         } ?: return UserRoles.ERROR
 
         val responseBodyAsString: String =
