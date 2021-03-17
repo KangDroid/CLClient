@@ -264,6 +264,33 @@ class ServerCommunication {
         return FunctionResponse.SUCCESS
     }
 
+    fun registerNode(nodeSaveRequestDto: NodeSaveRequestDto): FunctionResponse {
+        if (!checkToken()) return FunctionResponse.CLIENT_NO_TOKEN
+        val registerNodeUrl: String = "${serverConfigurationComponent.masterServerAddress}/api/admin/node/register"
+
+        val responseEntityString: ResponseEntity<String> = getResponseEntityInStringFormat {
+            val httpHeaders: HttpHeaders = HttpHeaders().apply {
+                add("X-AUTH-TOKEN", token)
+            }
+            restTemplate.exchange(registerNodeUrl, HttpMethod.POST, HttpEntity<NodeSaveRequestDto>(nodeSaveRequestDto, httpHeaders))
+        } ?: return FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX
+
+        val responseBodyString: String = responseEntityString.body ?: run {
+            KDRPrinter.printError("Cannot get body part from server.")
+            return FunctionResponse.SERVER_RESPONSE_OK_BUT_NO_BODY
+        }
+
+        val responseBody: NodeSaveResponseDto = getObjectValues<NodeSaveResponseDto>(responseBodyString)
+            ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
+
+        KDRPrinter.printNormal("Successfully registered node!")
+        KDRPrinter.printNormal("IP Address: ${responseBody.ipAddress}")
+        KDRPrinter.printNormal("Host Port: ${responseBody.hostPort}")
+        KDRPrinter.printNormal("Region Name: ${responseBody.regionName}")
+
+        return FunctionResponse.SUCCESS
+    }
+
     fun checkUser(): UserRoles {
         if (!checkToken()) return UserRoles.ERROR
 
