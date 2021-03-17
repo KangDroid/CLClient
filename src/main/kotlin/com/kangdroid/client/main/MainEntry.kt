@@ -1,8 +1,10 @@
 package com.kangdroid.client.main
 
 import com.kangdroid.client.communication.ServerCommunication
+import com.kangdroid.client.communication.dto.NodeSaveRequestDto
 import com.kangdroid.client.communication.dto.UserLoginRequestDto
 import com.kangdroid.client.error.FunctionResponse
+import com.kangdroid.client.error.UserRoles
 import com.kangdroid.client.printer.KDRPrinter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -21,6 +23,7 @@ class MainEntry {
     enum class MainMenuEntry(private val menuName: String) {
         LOGIN("Login"),
         REGISTER("Register"),
+        ADMIN_REGISTER_NODE("Register Compute Node"),
         REQUEST_IMAGE("Request Image"),
         LIST_CONTAINER("List Registered Container"),
         RESTART_CONTAINER("Restart Container"),
@@ -74,6 +77,25 @@ class MainEntry {
                         convertStringToInt(index)?.let {
                             serverCommunication.restartClientContainer(it)
                         }
+                    }
+                }
+
+                MainMenuEntry.ADMIN_REGISTER_NODE -> {
+                    if (serverCommunication.checkUser() == UserRoles.ADMIN) {
+                        val nodeSaveRequestDto: NodeSaveRequestDto = NodeSaveRequestDto(
+                            0, "", "", ""
+                        )
+
+                        with (nodeSaveRequestDto) {
+                            KDRPrinter.printNormal("Input node's ip address/hostname: ", false)
+                            ipAddress = inputScanner.nextLine()
+
+                            KDRPrinter.printNormal("Input node's port: ", false)
+                            hostPort = inputScanner.nextLine()
+                        }
+                        serverCommunication.registerNode(nodeSaveRequestDto)
+                    } else {
+                        KDRPrinter.printError("Only admins are allowed to use this menu!")
                     }
                 }
 
