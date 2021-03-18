@@ -7,6 +7,7 @@ import com.kangdroid.client.communication.dto.NodeSaveResponseDto
 import com.kangdroid.client.error.FunctionResponse
 import com.kangdroid.client.error.UserRoles
 import org.assertj.core.api.Assertions.assertThat
+import org.bson.types.ObjectId
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -38,7 +39,7 @@ class ServerCommunicationRegisterNodeTest {
     private lateinit var clientHttpRequestFactory: ClientHttpRequestFactory
 
     private val nodeSaveRequestDto: NodeSaveRequestDto = NodeSaveRequestDto(
-        id = 0,
+        id = ObjectId(),
         hostName = "testHost",
         hostPort = "testPort",
         ipAddress = "testIPAddress"
