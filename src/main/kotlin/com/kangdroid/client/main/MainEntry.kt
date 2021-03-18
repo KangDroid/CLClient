@@ -6,6 +6,7 @@ import com.kangdroid.client.communication.dto.UserLoginRequestDto
 import com.kangdroid.client.error.FunctionResponse
 import com.kangdroid.client.error.UserRoles
 import com.kangdroid.client.printer.KDRPrinter
+import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.io.Console
@@ -83,7 +84,7 @@ class MainEntry {
                 MainMenuEntry.ADMIN_REGISTER_NODE -> {
                     if (serverCommunication.checkUser() == UserRoles.ADMIN) {
                         val nodeSaveRequestDto: NodeSaveRequestDto = NodeSaveRequestDto(
-                            0, "", "", ""
+                            ObjectId(), "", "", ""
                         )
 
                         with (nodeSaveRequestDto) {
