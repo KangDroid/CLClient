@@ -7,17 +7,13 @@ import com.kangdroid.client.error.FunctionResponse
 import com.kangdroid.client.error.UserRoles
 import com.kangdroid.client.printer.KDRPrinter
 import org.bson.types.ObjectId
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.io.Console
 import java.util.*
 import javax.annotation.PostConstruct
 
 @Component
-class MainEntry {
-    @Autowired
-    private lateinit var serverCommunication: ServerCommunication
-
+class MainEntry(val serverCommunication: ServerCommunication) {
     // Scanner
     val inputScanner: Scanner = Scanner(System.`in`)
 
@@ -87,7 +83,7 @@ class MainEntry {
                             ObjectId(), "", "", ""
                         )
 
-                        with (nodeSaveRequestDto) {
+                        with(nodeSaveRequestDto) {
                             KDRPrinter.printNormal("Input node's ip address/hostname: ", false)
                             ipAddress = inputScanner.nextLine()
 
@@ -129,7 +125,7 @@ class MainEntry {
             }
         }
 
-        KDRPrinter.printError("Unknown number ${input+1}.")
+        KDRPrinter.printError("Unknown number ${input + 1}.")
         return MainMenuEntry.EXIT
     }
 
@@ -164,7 +160,7 @@ class MainEntry {
             null
         } else {
             userLoginRequestDto.userName = console.readLine("Input ID: ")
-            userLoginRequestDto.userPassword = String(console.readPassword("Input Password: " ))
+            userLoginRequestDto.userPassword = String(console.readPassword("Input Password: "))
             userLoginRequestDto
         }
     }

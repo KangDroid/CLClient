@@ -1,14 +1,12 @@
 package com.kangdroid.client.communication
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.kangdroid.client.communication.dto.*
 import com.kangdroid.client.configuration.ServerConfigurationComponent
 import com.kangdroid.client.error.FunctionResponse
 import com.kangdroid.client.error.UserRoles
 import com.kangdroid.client.printer.KDRPrinter
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -17,12 +15,11 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.*
 
 @Component
-class ServerCommunication {
+class ServerCommunication(
+    val serverConfigurationComponent: ServerConfigurationComponent
+) {
     val restTemplate: RestTemplate = RestTemplate()
 
-    @Autowired
-    private lateinit var serverConfigurationComponent: ServerConfigurationComponent
-    
     private var token: String? = null
     private val objectMapper: ObjectMapper = ObjectMapper()
     private var containerList: MutableList<UserImageListResponseDto> = mutableListOf()
@@ -178,7 +175,8 @@ class ServerCommunication {
 
         // Parse as Objects
         val userImageResponseList: Array<UserImageListResponseDto> =
-            getObjectValues<Array<UserImageListResponseDto>>(responseBody) ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
+            getObjectValues<Array<UserImageListResponseDto>>(responseBody)
+                ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
 
         // Clear container
         containerList.clear()
@@ -200,7 +198,8 @@ class ServerCommunication {
 
     fun createClientContainer(region: String): FunctionResponse {
         if (!checkToken()) return FunctionResponse.CLIENT_NO_TOKEN
-        val clientCreateContainerUrl: String = "${serverConfigurationComponent.masterServerAddress}/api/client/container"
+        val clientCreateContainerUrl: String =
+            "${serverConfigurationComponent.masterServerAddress}/api/client/container"
 
         // Temp DTO Declare
         class UserImageSaveRequestDto(
@@ -214,7 +213,11 @@ class ServerCommunication {
             val httpHeaders: HttpHeaders = HttpHeaders().apply {
                 add("X-AUTH-TOKEN", token)
             }
-            restTemplate.exchange(clientCreateContainerUrl, HttpMethod.POST, HttpEntity<UserImageSaveRequestDto>(UserImageSaveRequestDto(computeRegion = region), httpHeaders))
+            restTemplate.exchange(
+                clientCreateContainerUrl,
+                HttpMethod.POST,
+                HttpEntity<UserImageSaveRequestDto>(UserImageSaveRequestDto(computeRegion = region), httpHeaders)
+            )
         } ?: return FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX
 
         // get Response Body
@@ -225,7 +228,8 @@ class ServerCommunication {
 
         // Parse as Objects
         val userImageResponseList: UserImageResponseDto =
-            getObjectValues<UserImageResponseDto>(responseBody) ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
+            getObjectValues<UserImageResponseDto>(responseBody)
+                ?: return FunctionResponse.SERVER_RESPONSE_OK_BUT_WRONG_FORMAT
 
         KDRPrinter.printNormal("Container-ID: ${userImageResponseList.containerId}")
         KDRPrinter.printNormal("Successfully created on: ${userImageResponseList.regionLocation}")
@@ -254,13 +258,17 @@ class ServerCommunication {
             val httpHeaders: HttpHeaders = HttpHeaders().apply {
                 add("X-AUTH-TOKEN", token)
             }
-            restTemplate.exchange(clientRestartContainerUrl, HttpMethod.POST, HttpEntity<UserRestartRequestDto>(UserRestartRequestDto(
-                userToken = "",
-                containerId = containerList[containerListIndex - 1].dockerId
-            ), httpHeaders))
+            restTemplate.exchange(
+                clientRestartContainerUrl, HttpMethod.POST, HttpEntity<UserRestartRequestDto>(
+                    UserRestartRequestDto(
+                        userToken = "",
+                        containerId = containerList[containerListIndex - 1].dockerId
+                    ), httpHeaders
+                )
+            )
         } ?: return FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX
 
-        KDRPrinter.printNormal("Successfully restarted container, ID: ${containerList[containerListIndex-1].dockerId}")
+        KDRPrinter.printNormal("Successfully restarted container, ID: ${containerList[containerListIndex - 1].dockerId}")
         return FunctionResponse.SUCCESS
     }
 
@@ -272,7 +280,11 @@ class ServerCommunication {
             val httpHeaders: HttpHeaders = HttpHeaders().apply {
                 add("X-AUTH-TOKEN", token)
             }
-            restTemplate.exchange(registerNodeUrl, HttpMethod.POST, HttpEntity<NodeSaveRequestDto>(nodeSaveRequestDto, httpHeaders))
+            restTemplate.exchange(
+                registerNodeUrl,
+                HttpMethod.POST,
+                HttpEntity<NodeSaveRequestDto>(nodeSaveRequestDto, httpHeaders)
+            )
         } ?: return FunctionResponse.SERVER_COMMUNICATION_FAILED_WITH_4XX_5XX
 
         val responseBodyString: String = responseEntityString.body ?: run {
