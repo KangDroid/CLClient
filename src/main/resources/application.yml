@@ -6,6 +6,7 @@ logging:
   level:
     root: off
 kdr:
-  master-server-host: localhost
-  master-server-port: 8080
-  master-server-scheme: http
+  master:
+    master-server-host: localhost
+    master-server-port: 8080
+    master-server-scheme: http
